@@ -1,6 +1,5 @@
 package dm.diabetesmanagementmainbe.dtos;
 
-import dm.diabetesmanagementmainbe.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,7 +15,7 @@ import java.util.UUID;
 public class UserDTO {
     private UUID id;
     private String email;
-    private Role role;
+    //private Role role;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Boolean isActive;
