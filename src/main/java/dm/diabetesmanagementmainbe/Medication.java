@@ -6,6 +6,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -15,6 +17,8 @@ import java.time.LocalDate;
 import java.util.Map;
 import java.util.UUID;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "medication")
 public class Medication {
@@ -55,77 +59,5 @@ public class Medication {
     @ColumnDefault("now()")
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public String getMedicationName() {
-        return medicationName;
-    }
-
-    public void setMedicationName(String medicationName) {
-        this.medicationName = medicationName;
-    }
-
-    public Float getDosageMg() {
-        return dosageMg;
-    }
-
-    public void setDosageMg(Float dosageMg) {
-        this.dosageMg = dosageMg;
-    }
-
-    public String getFrequency() {
-        return frequency;
-    }
-
-    public void setFrequency(String frequency) {
-        this.frequency = frequency;
-    }
-
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
-    }
-
-    public LocalDate getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(LocalDate endDate) {
-        this.endDate = endDate;
-    }
-
-    public String getSideEffects() {
-        return sideEffects;
-    }
-
-    public void setSideEffects(String sideEffects) {
-        this.sideEffects = sideEffects;
-    }
-
-    public Map<String, Object> getInteractionWarnings() {
-        return interactionWarnings;
-    }
-
-    public void setInteractionWarnings(Map<String, Object> interactionWarnings) {
-        this.interactionWarnings = interactionWarnings;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
 
 }

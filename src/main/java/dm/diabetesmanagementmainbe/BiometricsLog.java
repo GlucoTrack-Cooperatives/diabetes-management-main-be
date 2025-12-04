@@ -5,12 +5,16 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "biometrics_log")
 public class BiometricsLog {
@@ -35,45 +39,5 @@ public class BiometricsLog {
     @ColumnDefault("now()")
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-
-    public Float getWeightKg() {
-        return weightKg;
-    }
-
-    public void setWeightKg(Float weightKg) {
-        this.weightKg = weightKg;
-    }
-
-    public Integer getWaterIntakeMl() {
-        return waterIntakeMl;
-    }
-
-    public void setWaterIntakeMl(Integer waterIntakeMl) {
-        this.waterIntakeMl = waterIntakeMl;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
 
 }

@@ -5,12 +5,16 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "activity_log")
 public class ActivityLog {
@@ -53,77 +57,5 @@ public class ActivityLog {
     @ColumnDefault("now()")
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-
-    public Integer getStepCount() {
-        return stepCount;
-    }
-
-    public void setStepCount(Integer stepCount) {
-        this.stepCount = stepCount;
-    }
-
-    public Float getActiveEnergyBurned() {
-        return activeEnergyBurned;
-    }
-
-    public void setActiveEnergyBurned(Float activeEnergyBurned) {
-        this.activeEnergyBurned = activeEnergyBurned;
-    }
-
-    public Integer getExerciseMinutes() {
-        return exerciseMinutes;
-    }
-
-    public void setExerciseMinutes(Integer exerciseMinutes) {
-        this.exerciseMinutes = exerciseMinutes;
-    }
-
-    public Integer getSleepDurationMinutes() {
-        return sleepDurationMinutes;
-    }
-
-    public void setSleepDurationMinutes(Integer sleepDurationMinutes) {
-        this.sleepDurationMinutes = sleepDurationMinutes;
-    }
-
-    public Instant getSleepStartTime() {
-        return sleepStartTime;
-    }
-
-    public void setSleepStartTime(Instant sleepStartTime) {
-        this.sleepStartTime = sleepStartTime;
-    }
-
-    public Instant getSleepEndTime() {
-        return sleepEndTime;
-    }
-
-    public void setSleepEndTime(Instant sleepEndTime) {
-        this.sleepEndTime = sleepEndTime;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
 
 }
