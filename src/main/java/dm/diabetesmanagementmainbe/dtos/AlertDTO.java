@@ -1,6 +1,5 @@
 package dm.diabetesmanagementmainbe.dtos;
 
-import dm.diabetesmanagementmainbe.enums.AlertType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,7 +15,7 @@ import java.util.UUID;
 public class AlertDTO {
     private UUID id;
     private LocalDateTime timestamp;
-    private AlertType type;
+    //private AlertType type;
     private String message;
     private Boolean isAcknowledged;
     private LocalDateTime acknowledgedAt;

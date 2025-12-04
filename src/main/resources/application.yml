@@ -1,0 +1,52 @@
+server:
+  servlet:
+    context-path: /api/diabetes-management
+spring:
+  flyway:
+    locations: classpath:db/migration/table
+    enabled: true
+    table: flyway_diabetes_management
+    default-schema: public
+    baseline-on-migrate: true
+  datasource:
+    hikari:
+      schema: public
+      minimum-idle: 5
+      maximum-pool-size: 50
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      auto-commit: true
+      connection-test-query: SELECT 1
+    type: com.zaxxer.hikari.HikariDataSource
+  application:
+    name: diabetes-management
+  task:
+    scheduling:
+      pool:
+        size: 4
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 200
+          time_zone: UTC
+        order_inserts: true
+        order_updates: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
+    show-sql: false
+
+jwt:
+  secret: my-secret-key-which-should-be-changed-in-production-and-be-base64-encoded
+  validity:
+    in-seconds: 3600
+    in-seconds-for-remember-me: 86400
+
+aws:
+  region: us-east-1
+
+fe:
+  link:

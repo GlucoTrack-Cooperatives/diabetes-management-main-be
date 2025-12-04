@@ -1,6 +1,5 @@
 package dm.diabetesmanagementmainbe.dtos;
 
-import dm.diabetesmanagementmainbe.enums.MedicationFrequency;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,7 +17,7 @@ public class MedicationDTO {
     private UUID id;
     private String medicationName;
     private Float dosageMg;
-    private MedicationFrequency frequency;
+    //private MedicationFrequency frequency;
     private LocalDate startDate;
     private LocalDate endDate;
     private String sideEffects;
