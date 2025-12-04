@@ -1,0 +1,26 @@
+spring:
+  flyway:
+    enabled: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/diabetes-management
+    username: postgres
+    password: postgres
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+aws:
+  access-key: ${AWS_ACCESS_KEY}
+  secret-key: ${AWS_SECRET_KEY}
+  region: us-east-1
+
+app:
+  file-upload:
+    max-size: 10MB
+    allowed-types: image/jpeg,image/png,application/pdf
+    local-storage-path: ./uploads
+
+fe:
+  link: http://localhost:3000
