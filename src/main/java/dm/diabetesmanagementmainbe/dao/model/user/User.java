@@ -1,5 +1,6 @@
-package dm.diabetesmanagementmainbe;
+package dm.diabetesmanagementmainbe.dao.model.user;
 
+import dm.diabetesmanagementmainbe.dao.model.AbstractEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -7,20 +8,14 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
-import java.time.Instant;
-import java.util.UUID;
-
 @Setter
 @Getter
 @Entity
 @Table(name = "\"user\"", uniqueConstraints = {
         @UniqueConstraint(name = "user_email_key", columnNames = {"email"})
 })
-public class User {
-    @Id
-    @ColumnDefault("gen_random_uuid()")
-    @Column(name = "id", nullable = false)
-    private UUID id;
+public class User extends AbstractEntity {
+
 
     @Size(max = 255)
     @NotNull
@@ -29,8 +24,13 @@ public class User {
 
     @Size(max = 255)
     @NotNull
-    @Column(name = "password_hash", nullable = false)
-    private String passwordHash;
+    @Column(name = "full_name", nullable = false)
+    private String fullName;
+
+    @Size(max = 255)
+    @NotNull
+    @Column(name = "password", nullable = false)
+    private String password;
 
     @Size(max = 50)
     @NotNull
@@ -41,12 +41,8 @@ public class User {
     @Column(name = "is_active")
     private Boolean isActive;
 
-    @NotNull
-    @ColumnDefault("now()")
-    @Column(name = "created_at", nullable = false)
-    private Instant createdAt;
-
-    @Column(name = "updated_at")
-    private Instant updatedAt;
-
+    public enum Role {
+        USER,
+        ADMIN
+    }
 }
