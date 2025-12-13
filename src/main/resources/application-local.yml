@@ -2,9 +2,10 @@ spring:
   flyway:
     enabled: true
   datasource:
-    url: jdbc:postgresql://localhost:5432/diabetes-management
+    url: jdbc:postgresql://localhost:5432/diabetes_management
     username: postgres
     password: postgres
+    driver-class-name: org.postgresql.Driver
   jpa:
     show-sql: true
     properties:
@@ -12,8 +13,8 @@ spring:
         format_sql: true
 
 aws:
-  access-key: ${AWS_ACCESS_KEY}
-  secret-key: ${AWS_SECRET_KEY}
+  access-key: ${AWS_ACCESS_KEY:}
+  secret-key: ${AWS_SECRET_KEY:}
   region: us-east-1
 
 app:
