@@ -14,13 +14,13 @@ public class PatientSignUpRequest extends SignUpRequest {
 
     @Size(max = 255)
     @NotNull
-    private String phoneNumbers;
+    private String phoneNumber;
 
     @NotNull
     private LocalDate dob;
 
     @NotNull
-    private LocalDate diagnosisDate;
+    private LocalDate diagnosisDate; // the date when the patient was medically diagnosed with diabetes.
 
     @Size(max = 255)
     @NotNull

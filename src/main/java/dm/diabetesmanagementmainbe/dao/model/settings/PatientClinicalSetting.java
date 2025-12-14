@@ -49,4 +49,11 @@ public class PatientClinicalSetting {
     @Column(name = "updated_at")
     private Instant updatedAt;
 
+    @PrePersist
+    private void prePersist() {
+        if (createdAt == null) {
+            createdAt = Instant.now();
+        }
+    }
+
 }

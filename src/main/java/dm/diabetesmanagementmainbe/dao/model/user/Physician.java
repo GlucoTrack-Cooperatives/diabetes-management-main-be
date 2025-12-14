@@ -2,6 +2,7 @@ package dm.diabetesmanagementmainbe.dao.model.user;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotNull;
@@ -20,6 +21,7 @@ import java.time.Instant;
 })
 public class Physician extends User {
 
+    // DOCTOR Specialty: What is that doctor specialist for
     @Size(max = 255)
     @NotNull
     @Column(name = "specialty", nullable = false)
@@ -39,5 +41,12 @@ public class Physician extends User {
     @ColumnDefault("now()")
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
+
+    @PrePersist
+    private void prePersist() {
+        if (createdAt == null) {
+            createdAt = Instant.now();
+        }
+    }
 
 }

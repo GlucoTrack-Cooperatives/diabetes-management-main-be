@@ -32,7 +32,7 @@ public class CommunicationService {
                             .orElse("");
                     return ChatThreadDTO.builder()
                             .id(thread.getId())
-                            .physicianName(thread.getPhysician().getFullName())
+                            .physicianName(thread.getPhysician().getFirstName())
                             .lastMessage(lastMessage)
                             .build();
                 })

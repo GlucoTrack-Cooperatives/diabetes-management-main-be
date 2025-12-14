@@ -31,11 +31,12 @@ public class UserService {
 
         var patient = new Patient();
         patient.setEmail(request.getEmail());
-        patient.setFullName(request.getFullName());
+        patient.setFirstName(request.getFirstName());
+        patient.setSurname(request.getSurname());
         patient.setPassword(passwordEncoder.encode(request.getPassword()));
         patient.setRole(User.Role.PATIENT.name());
         patient.setIsActive(true);
-        patient.setPhoneNumbers(request.getPhoneNumbers());
+        patient.setPhoneNumbers(request.getPhoneNumber());
         patient.setDob(request.getDob());
         patient.setDiagnosisDate(request.getDiagnosisDate());
         patient.setEmergencyContactPhone(request.getEmergencyContactPhone());
@@ -51,7 +52,8 @@ public class UserService {
 
         var physician = new Physician();
         physician.setEmail(request.getEmail());
-        physician.setFullName(request.getFullName());
+        physician.setFirstName(request.getFirstName());
+        physician.setSurname(request.getSurname());
         physician.setPassword(passwordEncoder.encode(request.getPassword()));
         physician.setRole(User.Role.PHYSICIAN.name());
         physician.setIsActive(true);

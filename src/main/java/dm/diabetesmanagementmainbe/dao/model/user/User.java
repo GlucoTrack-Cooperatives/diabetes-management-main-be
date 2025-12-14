@@ -28,8 +28,13 @@ public abstract class User {
 
     @Size(max = 255)
     @NotNull
-    @Column(name = "full_name", nullable = false)
-    private String fullName;
+    @Column(name = "first_name", nullable = false)
+    private String firstName;
+
+    @Size(max = 255)
+    @NotNull
+    @Column(name = "surname", nullable = false)
+    private String surname;
 
     @Size(max = 255)
     @NotNull

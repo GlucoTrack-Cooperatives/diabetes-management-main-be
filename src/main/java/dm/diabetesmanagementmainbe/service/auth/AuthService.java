@@ -36,8 +36,8 @@ public class AuthService {
                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
 
-
-            return tokenProvider.createToken(authentication, user.getId(), user.getEmail(), user.getFullName());
+            String fullName = user.getFirstName() + " " + user.getSurname();
+            return tokenProvider.createToken(authentication, user.getId(), user.getEmail(), fullName);
 
         } catch (IllegalArgumentException e) {
             log.warn("Authentication failed for user {}: {}", request.getEmail(), e.getMessage());
