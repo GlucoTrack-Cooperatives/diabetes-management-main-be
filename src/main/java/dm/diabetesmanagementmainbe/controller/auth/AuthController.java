@@ -23,6 +23,13 @@ public class AuthController {
         var token = authService.authorize(request);
         return ResponseEntity.ok(AuthToken.builder().jwt(token).build());
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout() {
+        // In a stateless JWT system, the client is responsible for discarding the token.
+        // This endpoint can be used for audit logs or future token blacklisting.
+        return ResponseEntity.ok().build();
+    }
 }
 
 
