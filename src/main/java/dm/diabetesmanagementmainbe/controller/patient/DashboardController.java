@@ -2,6 +2,7 @@ package dm.diabetesmanagementmainbe.controller.patient;
 
 import dm.diabetesmanagementmainbe.controller.patient.dto.DashboardStatsDTO;
 import dm.diabetesmanagementmainbe.controller.patient.dto.LatestGlucoseDTO;
+import dm.diabetesmanagementmainbe.controller.patient.dto.log.LogEntryDTO;
 import dm.diabetesmanagementmainbe.service.patient.DashboardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
