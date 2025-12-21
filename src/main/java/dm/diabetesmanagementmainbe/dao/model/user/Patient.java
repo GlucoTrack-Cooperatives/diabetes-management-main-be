@@ -42,6 +42,12 @@ public class Patient extends User {
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
+    @Column(name = "dexcom_email")
+    private String dexcomEmail;
+
+    @Column(name = "dexcom_password")
+    private String dexcomPassword;
+
     @PrePersist
     private void prePersist() {
         if (createdAt == null) {

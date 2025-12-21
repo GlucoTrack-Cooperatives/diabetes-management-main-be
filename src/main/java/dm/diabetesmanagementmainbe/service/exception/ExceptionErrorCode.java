@@ -15,7 +15,8 @@ public enum ExceptionErrorCode {
     INVALID_CREDENTIALS("invalid-credentials", Category.BUSINESS),
     JWT_EXCEPTION("jwt-exception", Category.TECHNICAL),
     EMAIL_NOT_FOUND("email_not_found",Category.BUSINESS),
-    INTEGRATION_EXCEPTION("integration_exception", Category.TECHNICAL);
+    INTEGRATION_EXCEPTION("integration_exception", Category.TECHNICAL),
+    DEXCOM_AUTHENTICATION_FAILED("dexcom-authentication-failed", Category.BUSINESS);
 
 
     private final String shortName;
