@@ -2,9 +2,11 @@ package dm.diabetesmanagementmainbe.config.security;
 
 import dm.diabetesmanagementmainbe.config.security.jwt.JWTConfigurer;
 import dm.diabetesmanagementmainbe.config.security.jwt.TokenProvider;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -38,11 +40,26 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/users/**").permitAll()
+                        // Public endpoints (Login, Logout)
+                        .requestMatchers("/api/auth/**").permitAll()
+
+                        // Public Sign-Up endpoints
+                        .requestMatchers("/api/patients/sign-up").permitAll()
+                        .requestMatchers("/api/physicians/sign-up").permitAll()
+
+                        // Role-based access control
+                        .requestMatchers("/api/patients/**").hasAuthority("PATIENT")
+                        .requestMatchers("/api/physicians/**").hasAuthority("PHYSICIAN")
+                        .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
+
+                        // All other requests require authentication
                         .anyRequest().authenticated()
                 )
-                .apply(new JWTConfigurer(tokenProvider));
+                .logout(logout -> logout
+                        .logoutUrl("/api/auth/logout")
+                        .logoutSuccessHandler((request, response, authentication) -> response.setStatus(HttpServletResponse.SC_OK))
+                )
+                .with(new JWTConfigurer(tokenProvider), Customizer.withDefaults());
 
         return http.build();
     }

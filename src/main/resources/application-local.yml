@@ -1,3 +1,6 @@
+server:
+  servlet:
+    context-path: /api/diabetes-management
 spring:
   flyway:
     enabled: true
@@ -5,15 +8,24 @@ spring:
     url: jdbc:postgresql://localhost:5432/diabetes-management
     username: postgres
     password: postgres
+    driver-class-name: org.postgresql.Driver
   jpa:
     show-sql: true
     properties:
       hibernate:
         format_sql: true
+  cloud:
+    gcp:
+      project-id: diabetes-management-local
+      credentials:
+        enabled: false
+      pubsub:
+        enabled: true
+        emulator-host: localhost:8085
 
 aws:
-  access-key: ${AWS_ACCESS_KEY}
-  secret-key: ${AWS_SECRET_KEY}
+  access-key: ${AWS_ACCESS_KEY:}
+  secret-key: ${AWS_SECRET_KEY:}
   region: us-east-1
 
 app:
@@ -24,3 +36,12 @@ app:
 
 fe:
   link: http://localhost:3000
+
+dexcom:
+  python:
+    service:
+      url: http://127.0.0.1:8081
+
+pubsub:
+  subscription:
+    glucose-alerts: glucose-alerts-sub

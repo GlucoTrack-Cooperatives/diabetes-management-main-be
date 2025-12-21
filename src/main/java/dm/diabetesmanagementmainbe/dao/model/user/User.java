@@ -1,6 +1,5 @@
 package dm.diabetesmanagementmainbe.dao.model.user;
 
-import dm.diabetesmanagementmainbe.dao.model.AbstractEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -8,24 +7,34 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.util.UUID;
+
 @Setter
 @Getter
 @Entity
-@Table(name = "\"user\"", uniqueConstraints = {
-        @UniqueConstraint(name = "user_email_key", columnNames = {"email"})
-})
-public class User extends AbstractEntity {
+@Table(name = "\"user\"")
+@Inheritance(strategy = InheritanceType.JOINED)
+public abstract class User {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", nullable = false)
+    private UUID id;
 
     @Size(max = 255)
     @NotNull
-    @Column(name = "email", nullable = false)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
     @Size(max = 255)
     @NotNull
-    @Column(name = "full_name", nullable = false)
-    private String fullName;
+    @Column(name = "first_name", nullable = false)
+    private String firstName;
+
+    @Size(max = 255)
+    @NotNull
+    @Column(name = "surname", nullable = false)
+    private String surname;
 
     @Size(max = 255)
     @NotNull
@@ -42,7 +51,8 @@ public class User extends AbstractEntity {
     private Boolean isActive;
 
     public enum Role {
-        USER,
+        PATIENT,
+        PHYSICIAN,
         ADMIN
     }
 }

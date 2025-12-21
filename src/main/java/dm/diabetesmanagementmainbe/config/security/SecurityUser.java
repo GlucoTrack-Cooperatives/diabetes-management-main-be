@@ -1,6 +1,8 @@
 package dm.diabetesmanagementmainbe.config.security;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -9,7 +11,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
 public class SecurityUser extends User {
 
     private UUID userId;
@@ -32,10 +35,10 @@ public class SecurityUser extends User {
         this(
                 user.getEmail(),
                 user.getPassword(),
-                Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole())),
+                Collections.singletonList(new SimpleGrantedAuthority(user.getRole())),
                 user.getId(),
                 user.getEmail(),
-                user.getFullName()
+                user.getFirstName() + " " + user.getSurname() // userFullname
         );
     }
 
