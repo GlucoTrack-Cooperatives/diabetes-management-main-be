@@ -27,7 +27,8 @@ public class AuthController {
         var token = authService.authorize(request);
 
         User user = userRepository.findByEmail(request.getEmail()).orElseThrow();
-        return ResponseEntity.ok(new LoginResponse(token, user.getRole()));
+
+        return ResponseEntity.ok(new LoginResponse(token, user.getRole(), user.getId()));
     }
 
     @PostMapping("/logout")
