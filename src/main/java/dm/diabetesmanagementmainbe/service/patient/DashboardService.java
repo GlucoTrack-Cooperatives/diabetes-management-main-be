@@ -2,7 +2,9 @@ package dm.diabetesmanagementmainbe.service.patient;
 
 import dm.diabetesmanagementmainbe.controller.patient.dto.DashboardStatsDTO;
 import dm.diabetesmanagementmainbe.controller.patient.dto.LatestGlucoseDTO;
+import dm.diabetesmanagementmainbe.controller.patient.dto.log.LogEntryDTO;
 import dm.diabetesmanagementmainbe.dao.model.tracker.GlucoseReading;
+import dm.diabetesmanagementmainbe.dao.repository.logging.FoodLogRepository;
 import dm.diabetesmanagementmainbe.dao.repository.stats.DailyPatientStatRepository;
 import dm.diabetesmanagementmainbe.dao.repository.tracker.GlucoseReadingRepository;
 import lombok.RequiredArgsConstructor;
@@ -10,8 +12,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +23,7 @@ public class DashboardService {
 
     private final GlucoseReadingRepository glucoseReadingRepository;
     private final DailyPatientStatRepository dailyPatientStatRepository;
+    private final FoodLogRepository foodLogRepository;
 
     // Constants for glucose ranges (mg/dL)
     private static final int TARGET_RANGE_LOW = 70;
@@ -83,4 +88,5 @@ public class DashboardService {
                 .timeBelowRange(timeBelowRange)
                 .build();
     }
+
 }

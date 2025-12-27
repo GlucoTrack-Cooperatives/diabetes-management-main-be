@@ -15,4 +15,6 @@ public class LogEntryDTO {
     private String type; // "Food" or "Insulin"
     private Instant timestamp;
     private String description;
+    private String carbs;
+    private String calories;
 }

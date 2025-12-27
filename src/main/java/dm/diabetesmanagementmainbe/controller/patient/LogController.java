@@ -36,4 +36,9 @@ public class LogController {
     public ResponseEntity<List<LogEntryDTO>> getRecentLogs(@PathVariable UUID patientId) {
         return ResponseEntity.ok(logService.findRecentLogs(patientId));
     }
+
+    @GetMapping("/meals")
+    public ResponseEntity<List<LogEntryDTO>> getRecentMeals(@PathVariable UUID patientId) {
+        return ResponseEntity.ok(logService.findRecentMeals(patientId));
+    }
 }
