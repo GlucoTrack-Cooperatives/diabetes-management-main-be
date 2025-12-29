@@ -64,4 +64,5 @@ public class UserService {
         physicianRepository.save(physician);
         log.info("Physician registered successfully with email: {}", request.getEmail());
     }
+
 }
