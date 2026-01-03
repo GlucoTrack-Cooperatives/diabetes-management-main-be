@@ -30,7 +30,8 @@ public class DexcomService {
 
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         String userEmail = authentication != null ? authentication.getName() : null;
-        var user = userRepository.findByEmail(userEmail).get();
+        var user = userRepository.findByEmail(userEmail).orElseThrow(
+                () -> new RuntimeException("User not found"));
 
         webClient.post()
                 .uri("/auth")

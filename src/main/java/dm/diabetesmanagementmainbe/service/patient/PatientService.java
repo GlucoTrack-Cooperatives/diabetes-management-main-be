@@ -1,5 +1,6 @@
 package dm.diabetesmanagementmainbe.service.patient;
 
+import dm.diabetesmanagementmainbe.controller.patient.dto.UpdatePatientProfileRequest;
 import dm.diabetesmanagementmainbe.dao.model.user.Patient;
 import dm.diabetesmanagementmainbe.dao.repository.user.PatientRepository;
 import dm.diabetesmanagementmainbe.dtos.DashboardDTO;
@@ -67,6 +68,20 @@ public class PatientService implements IPatientService {
         return patientRepository.findById(patientId)
                 .map(this::mapToDTO)
                 .orElseThrow(() -> new RuntimeException("Patient not found with ID: " + patientId));
+    }
+
+    public void updatePatientProfile(UUID patientId, UpdatePatientProfileRequest request) {
+        var patient = patientRepository.findById(patientId)
+                .orElseThrow(() -> new RuntimeException("Patient not found"));
+
+        if (request.getFirstName() != null) patient.setFirstName(request.getFirstName());
+        if (request.getSurName() != null) patient.setSurname(request.getSurName());
+        if (request.getPhoneNumber() != null) patient.setPhoneNumbers(request.getPhoneNumber());
+        if (request.getDob() != null) patient.setDob(request.getDob());
+        if (request.getDiagnosisDate() != null) patient.setDiagnosisDate(request.getDiagnosisDate());
+        if (request.getEmergencyContactPhone() != null) patient.setEmergencyContactPhone(request.getEmergencyContactPhone());
+
+        patientRepository.save(patient);
     }
 
     // Helper method to handle mapping

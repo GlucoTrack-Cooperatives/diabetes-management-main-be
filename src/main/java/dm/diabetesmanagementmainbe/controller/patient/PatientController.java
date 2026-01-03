@@ -1,6 +1,7 @@
 package dm.diabetesmanagementmainbe.controller.patient;
 
 import dm.diabetesmanagementmainbe.controller.patient.dto.PatientSignUpRequest;
+import dm.diabetesmanagementmainbe.controller.patient.dto.UpdatePatientProfileRequest;
 import dm.diabetesmanagementmainbe.dtos.PatientDTO;
 import dm.diabetesmanagementmainbe.service.patient.PatientService;
 import dm.diabetesmanagementmainbe.service.user.UserService;
@@ -32,5 +33,11 @@ public class PatientController {
     @GetMapping("/{patientId}")
     public ResponseEntity<PatientDTO> getPatient(@PathVariable UUID patientId) {
         return ResponseEntity.ok(patientService.getPatient(patientId));
+    }
+
+    @PutMapping("/{patientId}/profile")
+    public ResponseEntity<Void> updatePatientProfile(@PathVariable UUID patientId, @RequestBody @Valid UpdatePatientProfileRequest request) {
+        patientService.updatePatientProfile(patientId, request);
+        return ResponseEntity.ok().build();
     }
 }
