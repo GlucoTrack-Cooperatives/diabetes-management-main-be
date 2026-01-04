@@ -1,5 +1,6 @@
 package dm.diabetesmanagementmainbe.config.security.jwt;
 
+import dm.diabetesmanagementmainbe.config.security.SecurityUser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -106,7 +107,20 @@ public class TokenProvider {
                     .collect(Collectors.toList());
         }
 
-        String principal = claims.get("userEmail", String.class);
+        String userIdStr = claims.get("userId", String.class);
+        UUID userId = userIdStr != null ? UUID.fromString(userIdStr) : null;
+        String userEmail = claims.get("userEmail", String.class);
+        String userFullName = claims.get("userFullName", String.class);
+        String principalName = claims.getSubject(); // Usually the email or username
+
+        SecurityUser principal = new SecurityUser(
+                principalName,
+                "",
+                authorities,
+                userId,
+                userEmail,
+                userFullName
+        );
 
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }

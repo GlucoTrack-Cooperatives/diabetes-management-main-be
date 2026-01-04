@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -40,17 +41,19 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authz -> authz
-                        // Public endpoints (Login, Logout)
-                        .requestMatchers("/api/auth/**").permitAll()
-
                         // Public Sign-Up endpoints
+                        .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/patients/sign-up").permitAll()
                         .requestMatchers("/api/physicians/sign-up").permitAll()
 
                         // Role-based access control
+                        .requestMatchers("/api/physicians/**").authenticated()
+                        .requestMatchers("/api/patients/**").authenticated()
+
                         .requestMatchers("/api/patients/**").hasAuthority("PATIENT")
                         .requestMatchers("/api/physicians/**").hasAuthority("PHYSICIAN")
                         .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
+                        // Public endpoints (Login, Logout)
 
                         // All other requests require authentication
                         .anyRequest().authenticated()

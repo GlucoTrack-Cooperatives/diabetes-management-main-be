@@ -35,6 +35,10 @@ public class PhysicianController {
     @PostMapping("/invite-patient")
     public ResponseEntity<Void> invitePatient(@AuthenticationPrincipal SecurityUser securityUser,
                                               @RequestBody @Valid InvitePatientRequest request) {
+        if (securityUser == null) {
+            log.warn("Unauthorized access attempt to invite-patient");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
         physicianService.invitePatient(securityUser.getUserId(), request);
         return ResponseEntity.ok().build();
     }
@@ -42,6 +46,12 @@ public class PhysicianController {
     @GetMapping("/patients")
     public ResponseEntity<List<PatientOverviewDTO>> getPatients(@AuthenticationPrincipal SecurityUser securityUser) {
         // This leverages the PatientOverviewDTO to provide exactly what the dashboard needs
+        // Defensive check: If security is misconfigured or token is missing
+        if (securityUser == null) {
+            log.warn("Unauthorized access attempt to get patients");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         return ResponseEntity.ok(physicianService.getPatients(securityUser.getUserId()));
     }
 }

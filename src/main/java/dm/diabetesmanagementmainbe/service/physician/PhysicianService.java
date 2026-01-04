@@ -35,13 +35,13 @@ public class PhysicianService {
      */
     @Transactional
     public void invitePatient(UUID physicianId, InvitePatientRequest request) {
-        log.info("Physician {} inviting patient {}", physicianId, request.getEmail());
+        log.info("Physician {} inviting patient {}", physicianId, request.getPatientEmail());
 
         Physician physician = physicianRepository.findById(physicianId)
                 .orElseThrow(() -> new RuntimeException("Physician not found"));
 
-        var patient = patientRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("Patient with email " + request.getEmail() + " not found"));
+        var patient = patientRepository.findByEmail(request.getPatientEmail())
+                .orElseThrow(() -> new RuntimeException("Patient with email " + request.getPatientEmail() + " not found"));
 
         // Logic to link patient to physician
         patient.setPhysician(physician);
