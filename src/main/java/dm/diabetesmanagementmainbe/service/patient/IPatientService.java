@@ -8,7 +8,6 @@ import dm.diabetesmanagementmainbe.dtos.PatientDTO;
 import java.util.UUID;
 
 public interface IPatientService {
-    DashboardDTO getDashboardData();
     FoodLog logMeal(FoodLog foodLog);
     InsulinDose logInsulin(InsulinDose insulinDose);
     PatientDTO getPatient(UUID patientId);

@@ -4,7 +4,7 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 
 @Data
-public class SignUpRequest {
+public class    SignUpRequest {
     @NotNull(message = "First name cannot be null")
     @NotBlank(message = "First name cannot be empty")
     @Size(min = 1, max = 50)

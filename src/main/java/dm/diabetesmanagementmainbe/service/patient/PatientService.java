@@ -1,6 +1,6 @@
 package dm.diabetesmanagementmainbe.service.patient;
 
-import dm.diabetesmanagementmainbe.controller.patient.dto.UpdatePatientProfileRequest;
+import dm.diabetesmanagementmainbe.controller.patient.dto.settings.UpdatePatientProfileRequest;
 import dm.diabetesmanagementmainbe.dao.model.user.Patient;
 import dm.diabetesmanagementmainbe.dao.repository.user.PatientRepository;
 import dm.diabetesmanagementmainbe.dtos.DashboardDTO;
@@ -12,6 +12,7 @@ import dm.diabetesmanagementmainbe.dao.repository.logging.FoodLogRepository;
 import dm.diabetesmanagementmainbe.dao.repository.tracker.GlucoseReadingRepository;
 import dm.diabetesmanagementmainbe.dao.repository.logging.InsulinDoseRepository;
 import dm.diabetesmanagementmainbe.dtos.PatientDTO;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -28,30 +29,6 @@ public class PatientService implements IPatientService {
     private final InsulinDoseRepository insulinDoseRepository;
     private final PatientRepository patientRepository;
 
-    @Override
-    public DashboardDTO getDashboardData() {
-        // Mock data for now
-        var realTimeGlucose = new GlucoseReading();
-        realTimeGlucose.setValue(145);
-        realTimeGlucose.setTrend("up");
-
-        var glucoseReadings = List.of(
-                new GlucoseReading(),
-                new GlucoseReading()
-        );
-
-        var keyMetrics = KeyMetricsDTO.builder()
-                .timeInRange(72)
-                .timeBelowRange(4)
-                .averageGlucose(165)
-                .build();
-
-        return DashboardDTO.builder()
-                .realTimeGlucose(realTimeGlucose)
-                .glucoseReadings(glucoseReadings)
-                .keyMetrics(keyMetrics)
-                .build();
-    }
 
     @Override
     public FoodLog logMeal(FoodLog foodLog) {
@@ -81,6 +58,19 @@ public class PatientService implements IPatientService {
         if (request.getDiagnosisDate() != null) patient.setDiagnosisDate(request.getDiagnosisDate());
         if (request.getEmergencyContactPhone() != null) patient.setEmergencyContactPhone(request.getEmergencyContactPhone());
 
+        patientRepository.save(patient);
+    }
+
+    @Transactional
+    public void confirmPhysician(UUID patientId) {
+        var patient = patientRepository.findById(patientId)
+                .orElseThrow(() -> new RuntimeException("Patient not found"));
+
+        if (patient.getPhysician() == null) {
+            throw new RuntimeException("No physician request pending");
+        }
+
+        patient.setIsPhysicianConfirmed(true);
         patientRepository.save(patient);
     }
 

@@ -1,4 +1,4 @@
-package dm.diabetesmanagementmainbe.controller.patient.dto;
+package dm.diabetesmanagementmainbe.controller.patient.dto.settings;
 
 import lombok.Data;
 

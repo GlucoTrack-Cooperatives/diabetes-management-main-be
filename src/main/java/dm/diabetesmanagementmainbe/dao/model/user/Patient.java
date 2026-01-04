@@ -1,9 +1,6 @@
 package dm.diabetesmanagementmainbe.dao.model.user;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -47,6 +44,14 @@ public class Patient extends User {
 
     @Column(name = "dexcom_password")
     private String dexcomPassword;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "physician_id")
+    private Physician physician;
+
+    @ColumnDefault("false")
+    @Column(name = "is_physician_confirmed")
+    private Boolean isPhysicianConfirmed;
 
     @PrePersist
     private void prePersist() {
