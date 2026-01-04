@@ -1,6 +1,5 @@
 package dm.diabetesmanagementmainbe.service.physician;
 
-
 import dm.diabetesmanagementmainbe.controller.physician.dto.InvitePatientRequest;
 import dm.diabetesmanagementmainbe.controller.physician.dto.PatientOverviewDTO;
 import dm.diabetesmanagementmainbe.dao.model.tracker.GlucoseReading;
@@ -8,9 +7,6 @@ import dm.diabetesmanagementmainbe.dao.model.user.Physician;
 import dm.diabetesmanagementmainbe.dao.repository.tracker.GlucoseReadingRepository;
 import dm.diabetesmanagementmainbe.dao.repository.user.PatientRepository;
 import dm.diabetesmanagementmainbe.dao.repository.user.PhysicianRepository;
-import dm.diabetesmanagementmainbe.dtos.PatientDTO;
-import dm.diabetesmanagementmainbe.service.exception.DiabetesManagementException;
-import dm.diabetesmanagementmainbe.service.exception.ExceptionErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,9 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.Period;
-import java.time.ZoneId;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,6 +30,9 @@ public class PhysicianService {
     private final PatientRepository patientRepository;
     private final GlucoseReadingRepository glucoseReadingRepository;
 
+    /**
+     * Invite a patient to connect with the physician.
+     */
     @Transactional
     public void invitePatient(UUID physicianId, InvitePatientRequest request) {
         log.info("Physician {} inviting patient {}", physicianId, request.getEmail());
@@ -42,34 +43,52 @@ public class PhysicianService {
         var patient = patientRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Patient with email " + request.getEmail() + " not found"));
 
-        if (patient.getPhysician() != null && patient.getIsPhysicianConfirmed()) {
-            // Handle case where patient already has a confirmed physician if necessary
-            // For now, we allow overriding or just throw logic
-            log.warn("Patient already has a physician assigned.");
-        }
-
+        // Logic to link patient to physician
         patient.setPhysician(physician);
         patient.setIsPhysicianConfirmed(false);
         patientRepository.save(patient);
     }
 
+    /**
+     * Get the overview list of patients for a specific physician.
+     * OPTIMIZED: Uses a single query to fetch latest stats for all patients (eliminating N+1 problem).
+     */
     @Transactional(readOnly = true)
     public List<PatientOverviewDTO> getPatients(UUID physicianId) {
         Physician physician = physicianRepository.findById(physicianId)
                 .orElseThrow(() -> new RuntimeException("Physician not found"));
 
-        return physician.getPatients().stream()
+        var patients = physician.getPatients();
+
+        if (patients.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // 1. Collect all Patient IDs
+        List<UUID> patientIds = patients.stream()
+                .map(p -> p.getId())
+                .collect(Collectors.toList());
+
+        // 2. Bulk fetch latest readings in ONE query
+        Map<UUID, GlucoseReading> readingsMap = glucoseReadingRepository.findLatestReadingsForPatients(patientIds)
+                .stream()
+                .collect(Collectors.toMap(
+                        reading -> reading.getPatient().getId(),
+                        Function.identity()
+                ));
+
+        // 3. Map to DTOs using the in-memory map
+        return patients.stream()
                 .map(patient -> {
-                    // 1. Calculate Age from DOB
+                    // Calculate Age
                     int age = 0;
                     if (patient.getDob() != null) {
                         age = Period.between(patient.getDob(), LocalDate.now()).getYears();
                     }
 
-                    // 2. Fetch Latest Glucose Reading (Snapshot)
-                    var latestGlucose = glucoseReadingRepository.findFirstByPatientIdOrderByTimestampDesc(patient.getId());
+                    // Get reading from map (O(1) lookup)
+                    GlucoseReading latestGlucose = readingsMap.get(patient.getId());
 
-                    // 3. Build DTO
                     return PatientOverviewDTO.builder()
                             .id(patient.getId())
                             .fullName(patient.getFirstName() + " " + patient.getSurname())
@@ -77,10 +96,9 @@ public class PhysicianService {
                             .phoneNumber(patient.getPhoneNumbers())
                             .age(age)
                             .isPhysicianConfirmed(patient.getIsPhysicianConfirmed())
-                            // Map optional glucose data safely
-                            .latestGlucoseValue(latestGlucose.map(GlucoseReading::getValue).orElse(null))
-                            .latestGlucoseTrend(latestGlucose.map(GlucoseReading::getTrend).orElse(null))
-                            .latestGlucoseTimestamp(latestGlucose.map(GlucoseReading::getTimestamp).orElse(null))
+                            .latestGlucoseValue(latestGlucose != null ? latestGlucose.getValue() : null)
+                            .latestGlucoseTrend(latestGlucose != null ? latestGlucose.getTrend() : null)
+                            .latestGlucoseTimestamp(latestGlucose != null ? latestGlucose.getTimestamp() : null)
                             .build();
                 })
                 .collect(Collectors.toList());
