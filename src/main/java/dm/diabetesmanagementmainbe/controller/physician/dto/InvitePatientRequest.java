@@ -11,5 +11,5 @@ public class InvitePatientRequest {
     @NotNull(message = "Email cannot be null")
     @NotBlank(message = "Email cannot be empty")
     @Email(message = "Please provide a valid email address")
-    private String email;
+    private String patientEmail;
 }
