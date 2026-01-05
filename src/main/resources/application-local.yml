@@ -22,11 +22,18 @@ spring:
       pubsub:
         enabled: true
         emulator-host: localhost:8085
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
 
 aws:
   access-key: ${AWS_ACCESS_KEY:}
   secret-key: ${AWS_SECRET_KEY:}
   region: us-east-1
+
+gemini:
+  api-key: ${GEMINI_API_KEY}
 
 app:
   file-upload:
