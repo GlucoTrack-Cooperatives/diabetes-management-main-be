@@ -7,6 +7,3 @@ INSERT INTO medication (id, name, type, created_at) VALUES
 ('66666666-6666-6666-6666-666666666666', 'Toujeo', 'Insulin', NOW()),
 ('77777777-7777-7777-7777-777777777777', 'Tresiba (Degludec)', 'Insulin', NOW()),
 ('88888888-8888-8888-8888-888888888888', 'Mixtard 30', 'Insulin', NOW());
-
-
-ALTER TABLE insulin_dose DROP COLUMN insulin_type;

@@ -11,6 +11,7 @@ import dm.diabetesmanagementmainbe.dao.repository.logging.MedicationRepository;
 import dm.diabetesmanagementmainbe.dao.repository.user.PatientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -66,6 +67,7 @@ public class LogService {
         insulinDoseRepository.save(insulinDose);
     }
 
+    @Transactional(readOnly = true)
     public List<LogEntryDTO> findRecentLogs(UUID patientId) {
         Instant end = Instant.now();
         Instant start = end.minus(1, ChronoUnit.DAYS);

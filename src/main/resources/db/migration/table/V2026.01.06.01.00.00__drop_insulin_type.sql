@@ -1,0 +1,1 @@
+ALTER TABLE insulin_dose DROP COLUMN insulin_type;
