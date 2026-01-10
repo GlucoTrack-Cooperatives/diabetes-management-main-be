@@ -42,6 +42,26 @@ public class PatientClinicalSetting {
     private Float correctionFactor;
 
     @NotNull
+    @ColumnDefault("70")
+    @Column(name = "low_threshold", nullable = false)
+    private Integer lowThreshold;
+
+    @NotNull
+    @ColumnDefault("54")
+    @Column(name = "critical_low_threshold", nullable = false)
+    private Integer criticalLowThreshold;
+
+    @NotNull
+    @ColumnDefault("180")
+    @Column(name = "high_threshold", nullable = false)
+    private Integer highThreshold;
+
+    @NotNull
+    @ColumnDefault("250")
+    @Column(name = "critical_high_threshold", nullable = false)
+    private Integer criticalHighThreshold;
+
+    @NotNull
     @ColumnDefault("now()")
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;

@@ -23,6 +23,10 @@ public class SettingsService {
                         .targetRangeLow(settings.getTargetRangeLow())
                         .insulinCarbRatio(settings.getInsulinCarbRatio())
                         .correctionFactor(settings.getCorrectionFactor())
+                        .lowThreshold(settings.getLowThreshold())
+                        .criticalLowThreshold(settings.getCriticalLowThreshold())
+                        .highThreshold(settings.getHighThreshold())
+                        .criticalHighThreshold(settings.getCriticalHighThreshold())
                         .build())
                 .orElse(new PatientSettingsDTO());
     }
@@ -35,11 +39,53 @@ public class SettingsService {
                 .orElse(new PatientClinicalSetting());
 
         settings.setPatient(patient);
-        settings.setTargetRangeHigh(request.getTargetRangeHigh());
-        settings.setTargetRangeLow(request.getTargetRangeLow());
-        settings.setInsulinCarbRatio(request.getInsulinCarbRatio());
-        settings.setCorrectionFactor(request.getCorrectionFactor());
+
+        if (request.getTargetRangeHigh() != null) {
+            validatePositiveValue(request.getTargetRangeHigh(), "Target Range High");
+            settings.setTargetRangeHigh(request.getTargetRangeHigh());
+        }
+
+        if (request.getTargetRangeLow() != null) {
+            validatePositiveValue(request.getTargetRangeLow(), "Target Range Low");
+            settings.setTargetRangeLow(request.getTargetRangeLow());
+        }
+
+        if (request.getInsulinCarbRatio() != null) {
+            validatePositiveValue(request.getInsulinCarbRatio(), "Insulin Carb Ratio");
+            settings.setInsulinCarbRatio(request.getInsulinCarbRatio());
+        }
+
+        if (request.getCorrectionFactor() != null) {
+            validatePositiveValue(request.getCorrectionFactor(), "Correction Factor");
+            settings.setCorrectionFactor(request.getCorrectionFactor());
+        }
+
+        if (request.getLowThreshold() != null) {
+            validatePositiveValue(request.getLowThreshold(), "Low Threshold");
+            settings.setLowThreshold(request.getLowThreshold());
+        }
+
+        if (request.getCriticalLowThreshold() != null) {
+            validatePositiveValue(request.getCriticalLowThreshold(), "Critical Low Threshold");
+            settings.setCriticalLowThreshold(request.getCriticalLowThreshold());
+        }
+
+        if (request.getHighThreshold() != null) {
+            validatePositiveValue(request.getHighThreshold(), "High Threshold");
+            settings.setHighThreshold(request.getHighThreshold());
+        }
+
+        if (request.getCriticalHighThreshold() != null) {
+            validatePositiveValue(request.getCriticalHighThreshold(), "Critical High Threshold");
+            settings.setCriticalHighThreshold(request.getCriticalHighThreshold());
+        }
 
         settingsRepository.save(settings);
+    }
+
+    private void validatePositiveValue(Number value, String fieldName) {
+        if (value.doubleValue() <= 0) {
+            throw new IllegalArgumentException(fieldName + " must be a positive value");
+        }
     }
 }

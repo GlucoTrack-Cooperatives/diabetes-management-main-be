@@ -2,9 +2,11 @@ package dm.diabetesmanagementmainbe.service.user;
 
 import dm.diabetesmanagementmainbe.controller.patient.dto.PatientSignUpRequest;
 import dm.diabetesmanagementmainbe.controller.physician.dto.PhysicianSignUpRequest;
+import dm.diabetesmanagementmainbe.dao.model.settings.PatientClinicalSetting;
 import dm.diabetesmanagementmainbe.dao.model.user.Patient;
 import dm.diabetesmanagementmainbe.dao.model.user.Physician;
 import dm.diabetesmanagementmainbe.dao.model.user.User;
+import dm.diabetesmanagementmainbe.dao.repository.settings.PatientClinicalSettingRepository;
 import dm.diabetesmanagementmainbe.dao.repository.user.PatientRepository;
 import dm.diabetesmanagementmainbe.dao.repository.user.PhysicianRepository;
 import dm.diabetesmanagementmainbe.dao.repository.user.UserRepository;
@@ -23,6 +25,7 @@ public class UserService {
     private final PatientRepository patientRepository;
     private final PhysicianRepository physicianRepository;
     private final PasswordEncoder passwordEncoder;
+    private final PatientClinicalSettingRepository settingsRepository;
 
     public void signUpPatient(PatientSignUpRequest request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
@@ -42,6 +45,19 @@ public class UserService {
         patient.setEmergencyContactPhone(request.getEmergencyContactPhone());
 
         patientRepository.save(patient);
+
+        var settings = new PatientClinicalSetting();
+        settings.setPatient(patient);
+        settings.setTargetRangeLow(70);
+        settings.setTargetRangeHigh(180);
+        settings.setInsulinCarbRatio(10.0f);
+        settings.setCorrectionFactor(50.0f);
+        settings.setLowThreshold(70);
+        settings.setCriticalLowThreshold(54);
+        settings.setHighThreshold(180);
+        settings.setCriticalHighThreshold(250);
+        settingsRepository.save(settings);
+
         log.info("Patient registered successfully with email: {}", request.getEmail());
     }
 
