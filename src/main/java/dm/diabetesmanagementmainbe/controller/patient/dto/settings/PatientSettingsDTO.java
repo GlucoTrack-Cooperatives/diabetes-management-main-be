@@ -14,4 +14,8 @@ public class PatientSettingsDTO {
     private Integer targetRangeLow;
     private Float insulinCarbRatio;
     private Float correctionFactor;
+    private Integer lowThreshold;
+    private Integer criticalLowThreshold;
+    private Integer highThreshold;
+    private Integer criticalHighThreshold;
 }
