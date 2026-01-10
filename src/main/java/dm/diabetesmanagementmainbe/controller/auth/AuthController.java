@@ -2,6 +2,9 @@ package dm.diabetesmanagementmainbe.controller.auth;
 
 import dm.diabetesmanagementmainbe.controller.auth.dto.AuthRequest;
 import dm.diabetesmanagementmainbe.controller.auth.dto.AuthToken;
+import dm.diabetesmanagementmainbe.controller.auth.dto.LoginResponse;
+import dm.diabetesmanagementmainbe.dao.model.user.User;
+import dm.diabetesmanagementmainbe.dao.repository.user.UserRepository;
 import dm.diabetesmanagementmainbe.service.auth.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,11 +20,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthService authService;
+    private final UserRepository userRepository;
 
     @PostMapping("/login")
-    public ResponseEntity<AuthToken> login(@RequestBody @Valid AuthRequest request) {
+    public ResponseEntity<LoginResponse> login(@RequestBody @Valid AuthRequest request) {
         var token = authService.authorize(request);
-        return ResponseEntity.ok(AuthToken.builder().jwt(token).build());
+
+        User user = userRepository.findByEmail(request.getEmail()).orElseThrow();
+
+        return ResponseEntity.ok(new LoginResponse(token, user.getRole(), user.getId()));
     }
 
     @PostMapping("/logout")

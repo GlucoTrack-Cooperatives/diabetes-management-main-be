@@ -4,6 +4,7 @@ import dm.diabetesmanagementmainbe.controller.patient.dto.DashboardStatsDTO;
 import dm.diabetesmanagementmainbe.controller.patient.dto.LatestGlucoseDTO;
 import dm.diabetesmanagementmainbe.controller.patient.dto.log.LogEntryDTO;
 import dm.diabetesmanagementmainbe.service.patient.DashboardService;
+import dm.diabetesmanagementmainbe.service.patient.LogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,7 @@ import java.util.UUID;
 public class DashboardController {
 
     private final DashboardService dashboardService;
+    private final LogService logService;
 
     @GetMapping("/glucose/latest")
     public ResponseEntity<LatestGlucoseDTO> getLatestGlucose(@PathVariable UUID patientId) {
@@ -31,5 +33,10 @@ public class DashboardController {
     @GetMapping("/stats")
     public ResponseEntity<DashboardStatsDTO> getDashboardStats(@PathVariable UUID patientId) {
         return ResponseEntity.ok(dashboardService.findDashboardStats(patientId));
+    }
+
+    @GetMapping("/recent-meals")
+    public ResponseEntity<List<LogEntryDTO>> getRecentMeals(@PathVariable UUID patientId) {
+        return ResponseEntity.ok(logService.findRecentMeals(patientId));
     }
 }

@@ -11,6 +11,7 @@ import dm.diabetesmanagementmainbe.dao.repository.logging.MedicationRepository;
 import dm.diabetesmanagementmainbe.dao.repository.user.PatientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -37,9 +38,17 @@ public class LogService {
         foodLog.setCarbs(request.getCarbs());
         foodLog.setCalories(request.getCalories());
         foodLog.setDescription(request.getDescription());
-        foodLog.setImageUrl(request.getImageUrl());
+        if (request.getMealType() != null) {
+            foodLog.setMealType(request.getMealType());
+        } else {
+            foodLog.setMealType("");
+        }
+        if (request.getImageUrl() != null) {
+            foodLog.setImageUrl(request.getImageUrl());
+        } else {
+            foodLog.setImageUrl(""); // Default to empty string
+        }
         foodLog.setTimestamp(Instant.now());
-
         foodLogRepository.save(foodLog);
     }
 
@@ -58,6 +67,7 @@ public class LogService {
         insulinDoseRepository.save(insulinDose);
     }
 
+    @Transactional(readOnly = true)
     public List<LogEntryDTO> findRecentLogs(UUID patientId) {
         Instant end = Instant.now();
         Instant start = end.minus(1, ChronoUnit.DAYS);
@@ -67,7 +77,9 @@ public class LogService {
                 .map(log -> LogEntryDTO.builder()
                         .type("Food")
                         .timestamp(log.getTimestamp())
-                        .description(log.getCarbs() + "g Carbs")
+                        .description(log.getDescription())
+                        .calories(log.getCalories() + " Kcal")
+                        .carbs(log.getCarbs() + "g Carbs")
                         .build());
 
         var insulinLogs = insulinDoseRepository.findByPatientIdAndTimestampBetweenOrderByTimestampDesc(patientId, start, end)
@@ -80,6 +92,22 @@ public class LogService {
 
         return Stream.concat(foodLogs, insulinLogs)
                 .sorted(Comparator.comparing(LogEntryDTO::getTimestamp).reversed())
+                .toList();
+    }
+
+    public List<LogEntryDTO> findRecentMeals(UUID patientId) {
+        Instant end = Instant.now();
+        Instant start = end.minus(1, ChronoUnit.DAYS);
+
+        return foodLogRepository.findByPatientIdAndTimestampBetweenOrderByTimestampDesc(patientId, start, end)
+                .stream()
+                .map(log -> LogEntryDTO.builder()
+                        .type("Food")
+                        .timestamp(log.getTimestamp())
+                        .description(log.getDescription())
+                        .calories(log.getCalories() + " Kcal")
+                        .carbs(log.getCarbs() + "g Carbs")
+                        .build())
                 .toList();
     }
 }

@@ -16,10 +16,16 @@ import java.util.UUID;
 public class PatientDTO {
     private UUID id;
     private String firstName;
-    private String lastName;
+    private String surName;
     private String phoneNumbers;
     private LocalDate dob;
     private LocalDate diagnosisDate;
     private String emergencyContactPhone;
     private LocalDateTime createdAt;
+
+    private UUID physicianId;
+    private String physicianName;
+    private String physicianSpecialty;
+    private String physicianClinic;
+    private Boolean isPhysicianConfirmed;
 }
