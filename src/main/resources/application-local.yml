@@ -1,6 +1,9 @@
 server:
   servlet:
     context-path: /api/diabetes-management
+  address: 0.0.0.0
+  port: 8080
+
 spring:
   flyway:
     enabled: true
@@ -33,13 +36,15 @@ aws:
   region: us-east-1
 
 gemini:
-  api-key: ${GEMINI_API_KEY}
+  api-key: AIzaSyBYgWHB5EOPctkTa53RLxVEZlLw9KnhlnU
 
 app:
   file-upload:
     max-size: 10MB
     allowed-types: image/jpeg,image/png,application/pdf
     local-storage-path: ./uploads
+  cors:
+    allowed-origins: http://localhost:3000,http://192.168.1.145:*
 
 fe:
   link: http://localhost:3000
