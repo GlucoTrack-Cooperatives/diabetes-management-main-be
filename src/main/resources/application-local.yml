@@ -8,7 +8,7 @@ spring:
   flyway:
     enabled: true
   datasource:
-    url: jdbc:postgresql://localhost:5432/diabetes-management
+    url: jdbc:postgresql://localhost:5432/diabetes_management
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
@@ -25,6 +25,8 @@ spring:
       pubsub:
         enabled: true
         emulator-host: localhost:8085
+      firestore:
+        enabled: false
   servlet:
     multipart:
       max-file-size: 10MB
