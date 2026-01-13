@@ -7,6 +7,7 @@ import dm.diabetesmanagementmainbe.dao.model.communication.Alert;
 import dm.diabetesmanagementmainbe.dao.repository.communication.AlertRepository;
 import dm.diabetesmanagementmainbe.dao.repository.user.PatientRepository;
 import dm.diabetesmanagementmainbe.dto.pubsub.GlucoseAlertMessage;
+import dm.diabetesmanagementmainbe.service.notifications.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.integration.annotation.ServiceActivator;
@@ -21,6 +22,7 @@ public class GlucoseAlertSubscriber {
     private final AlertRepository alertRepository;
     private final PatientRepository patientRepository;
     private final ObjectMapper objectMapper;
+    private final NotificationService notificationService;
 
     @ServiceActivator(inputChannel = "glucoseAlertInputChannel")
     public void handleGlucoseAlert(Message<?> message) {
@@ -45,12 +47,25 @@ public class GlucoseAlertSubscriber {
             log.info("Saved glucose alert for patient: {} with severity: {}",
                     alertMessage.getPatientId(), alert.getSeverity());
 
+            try {
+                String notificationTitle = "Glucose Alert - " + alert.getSeverity();
+                String notificationBody = alertMessage.getMessage();
+
+                notificationService.sendPushToUser(patient.getId(), notificationTitle, notificationBody);
+                log.info("Push notification sent to all devices for patient: {}", alertMessage.getPatientId());
+            } catch (Exception notificationError) {
+                log.error("Failed to send push notification for patient: {}",
+                         alertMessage.getPatientId(), notificationError);
+            }
+
             BasicAcknowledgeablePubsubMessage originalMessage = message.getHeaders()
                     .get(GcpPubSubHeaders.ORIGINAL_MESSAGE, BasicAcknowledgeablePubsubMessage.class);
             if (originalMessage != null) {
                 originalMessage.ack();
                 log.info("Message acknowledged");
             }
+
+
 
         } catch (Exception e) {
             log.error("Error processing glucose alert message", e);
