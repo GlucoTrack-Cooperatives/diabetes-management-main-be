@@ -1,6 +1,6 @@
 server:
   servlet:
-    context-path: /api/diabetes_management
+    context-path: /api/diabetes-management
   address: 0.0.0.0
   port: 8080
 
@@ -8,7 +8,7 @@ spring:
   flyway:
     enabled: true
   datasource:
-    url: jdbc:postgresql://localhost:5432/diabetes_management
+    url: jdbc:postgresql://localhost:5432/diabetes-management
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
