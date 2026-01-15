@@ -19,8 +19,8 @@ public class SettingsController {
     private final SettingsService settingsService;
 
     @GetMapping
-    public ResponseEntity<PatientSettingsDTO> getPatientSettings(@PathVariable UUID patientId) {
-        return ResponseEntity.ok(settingsService.getPatientSettings(patientId));
+    public ResponseEntity<PatientSettingsDTO> getPatientSettings(@AuthenticationPrincipal SecurityUser securityUser) {
+        return ResponseEntity.ok(settingsService.getPatientSettings(securityUser.getUserId()));
     }
 
     @PutMapping
