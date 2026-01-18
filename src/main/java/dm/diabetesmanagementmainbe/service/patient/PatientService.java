@@ -28,6 +28,7 @@ public class PatientService implements IPatientService {
     private final FoodLogRepository foodLogRepository;
     private final InsulinDoseRepository insulinDoseRepository;
     private final PatientRepository patientRepository;
+    private final CommunicationService communicationService;
 
 
     @Override
@@ -72,6 +73,9 @@ public class PatientService implements IPatientService {
 
         patient.setIsPhysicianConfirmed(true);
         patientRepository.save(patient);
+
+        // Create initial chat thread
+        communicationService.createInitialThread(patient, patient.getPhysician());
     }
 
     // Helper method to handle mapping

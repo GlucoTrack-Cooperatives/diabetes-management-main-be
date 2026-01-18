@@ -8,6 +8,7 @@ import dm.diabetesmanagementmainbe.dao.repository.tracker.GlucoseReadingReposito
 import dm.diabetesmanagementmainbe.dao.repository.user.PatientRepository;
 import dm.diabetesmanagementmainbe.dao.repository.user.PhysicianRepository;
 import dm.diabetesmanagementmainbe.service.exception.ResourceNotFoundException;
+import dm.diabetesmanagementmainbe.service.patient.CommunicationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,7 @@ public class PhysicianService {
     private final PhysicianRepository physicianRepository;
     private final PatientRepository patientRepository;
     private final GlucoseReadingRepository glucoseReadingRepository;
+    private final CommunicationService communicationService;
 
     /**
      * Invite a patient to connect with the physician.
@@ -48,6 +50,9 @@ public class PhysicianService {
         patient.setPhysician(physician);
         patient.setIsPhysicianConfirmed(false);
         patientRepository.save(patient);
+        
+        // Create initial chat thread
+        communicationService.createInitialThread(patient, physician);
     }
 
     /**
