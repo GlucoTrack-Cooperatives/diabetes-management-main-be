@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
+// // CLINCAL SETTINGS CONTROLLER
 @RestController
 @RequestMapping("/api/patients/settings")
 @RequiredArgsConstructor
@@ -19,17 +20,20 @@ public class SettingsController {
     private final SettingsService settingsService;
 
     @GetMapping
-    public ResponseEntity<PatientSettingsDTO> getPatientSettings(@PathVariable UUID patientId) {
-        return ResponseEntity.ok(settingsService.getPatientSettings(patientId));
+    public ResponseEntity<PatientSettingsDTO> getPatientSettings(
+            @AuthenticationPrincipal SecurityUser user
+    ) {
+        return ResponseEntity.ok(settingsService.getPatientSettings(user.getUserId()));
     }
 
     @PutMapping
-    public ResponseEntity<Void> updatePatientSettings(
+    public ResponseEntity<PatientSettingsDTO> updatePatientSettings(
             @AuthenticationPrincipal SecurityUser user,
             @RequestBody @Valid PatientSettingsDTO request
     ) {
         settingsService.updatePatientSettings(user.getUserId(), request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(settingsService.getPatientSettings(user.getUserId()));
+
     }
 }
 
