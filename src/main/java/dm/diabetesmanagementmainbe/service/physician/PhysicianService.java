@@ -3,6 +3,7 @@ package dm.diabetesmanagementmainbe.service.physician;
 import dm.diabetesmanagementmainbe.controller.physician.dto.InvitePatientRequest;
 import dm.diabetesmanagementmainbe.controller.physician.dto.PatientOverviewDTO;
 import dm.diabetesmanagementmainbe.dao.model.tracker.GlucoseReading;
+import dm.diabetesmanagementmainbe.dao.model.user.Patient;
 import dm.diabetesmanagementmainbe.dao.model.user.Physician;
 import dm.diabetesmanagementmainbe.dao.repository.tracker.GlucoseReadingRepository;
 import dm.diabetesmanagementmainbe.dao.repository.user.PatientRepository;
@@ -46,13 +47,22 @@ public class PhysicianService {
         var patient = patientRepository.findByEmail(request.getPatientEmail())
                 .orElseThrow(() -> new ResourceNotFoundException("Patient with email " + request.getPatientEmail() + " not found"));
 
+        if (patient.getPhysician() != null && patient.getPhysician().getId().equals(physicianId)) {
+            throw new IllegalStateException("You have already invited this patient");
+        }
+
         // Logic to link patient to physician
         patient.setPhysician(physician);
         patient.setIsPhysicianConfirmed(false);
-        patientRepository.save(patient);
-        
+        Patient savedPatient = patientRepository.save(patient);
+
+        log.info("AFTER SAVE: Patient {} has physician: {} (ID: {})",
+                savedPatient.getId(),
+                savedPatient.getPhysician() != null ? savedPatient.getPhysician().getFirstName() : "null",
+                savedPatient.getPhysician() != null ? savedPatient.getPhysician().getId() : "null");
+
         // Create initial chat thread
-        communicationService.createInitialThread(patient, physician);
+        // communicationService.createInitialThread(patient, physician);
     }
 
     /**
