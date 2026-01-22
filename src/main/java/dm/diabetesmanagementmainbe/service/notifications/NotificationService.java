@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import com.google.firebase.messaging.FirebaseMessagingException;
 
 @Service
 @Slf4j
@@ -42,12 +43,20 @@ public class NotificationService {
 
         log.info("Sending push notification to {} devices for user: {}", userTokens.size(), userId);
 
-        for (FcmToken fcmToken : userTokens) {
+        for (FcmToken token : userTokens) {
             try {
-                sendPushToToken(fcmToken.getToken(), title, body, data);
-            } catch (Exception e) {
+                sendPushToToken(token.getToken(), title, body, data);
+            } catch (FirebaseMessagingException e) {
                 log.error("Failed to send push notification to token: {} for user: {}",
-                        fcmToken.getToken(), userId, e);
+                        token.getToken(), userId, e);
+
+                String errorCode = e.getMessagingErrorCode() != null ? e.getMessagingErrorCode().toString() : "";                if ("SENDER_ID_MISMATCH".equals(errorCode) || "UNREGISTERED".equals(errorCode) || "INVALID_ARGUMENT".equals(errorCode)) {
+                    log.warn("Deleting invalid/stale FCM token: {}", token.getToken());
+                    fcmTokenRepository.delete(token);
+                }
+            } catch (Exception e) {
+                // Optional: Catch other generic errors (like NullPointerException) separately if needed
+                log.error("Unknown error sending push to token: {}", token.getToken(), e);
             }
         }
     }
