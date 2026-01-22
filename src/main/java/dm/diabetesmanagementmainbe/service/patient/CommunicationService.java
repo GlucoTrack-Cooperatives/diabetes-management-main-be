@@ -12,12 +12,12 @@ import dm.diabetesmanagementmainbe.dao.repository.communication.AlertRepository;
 import dm.diabetesmanagementmainbe.dao.repository.communication.ChatMessageRepository;
 import dm.diabetesmanagementmainbe.dao.repository.communication.ChatThreadRepository;
 import dm.diabetesmanagementmainbe.dao.repository.user.UserRepository;
+import dm.diabetesmanagementmainbe.service.notifications.NotificationService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.*;
@@ -32,23 +32,21 @@ public class CommunicationService {
     private final AlertRepository alertRepository;
     private final UserRepository userRepository;
 
+    // Injected Notification Service
+    private final NotificationService notificationService;
+
     @Transactional(readOnly = true)
     public List<ChatThreadDTO> findChatThreads(UUID userId) {
-        // 1. Log the input to ensure the method is actually called and the ID is correct
         log.info("Finding chat threads for userId: {}", userId);
 
         // Try to find threads where user is patient
         List<ChatThread> threads = chatThreadRepository.findByPatientId(userId);
-        log.info("Query by PatientID result count: {}", threads != null ? threads.size() : "null");
 
         // If empty, try to find threads where user is physician
         if (threads == null || threads.isEmpty()) {
-            log.info("No threads found as patient. Checking as physician...");
             threads = chatThreadRepository.findByPhysicianId(userId);
-            log.info("Query by PhysicianID result count: {}", threads != null ? threads.size() : "null");
         }
 
-        // Safety check before streaming
         if (threads == null || threads.isEmpty()) {
             log.warn("No threads found for userId: {} in either role.", userId);
             return Collections.emptyList();
@@ -56,9 +54,6 @@ public class CommunicationService {
 
         return threads.stream()
                 .map(thread -> {
-                    // 2. Log inside the loop to inspect specific thread data
-                    log.debug("Processing Thread ID: {}", thread.getId());
-
                     ChatMessage lastMsg = thread.getMessages().stream()
                             .max(Comparator.comparing(ChatMessage::getTimestamp))
                             .orElse(null);
@@ -67,11 +62,7 @@ public class CommunicationService {
                     Instant lastMessageTime = lastMsg != null ? lastMsg.getTimestamp() : thread.getCreatedAt();
 
                     String participantName;
-
-                    // 3. Log the IDs being compared to debug the "Participant Name" logic
                     UUID patientId = thread.getPatient().getId();
-                    UUID physicianId = thread.getPhysician().getId();
-                    log.debug("Comparing Input UserID: {} vs PatientID: {} vs PhysicianID: {}", userId, patientId, physicianId);
 
                     if (patientId.equals(userId)) {
                         participantName = thread.getPhysician().getFirstName() + " " + thread.getPhysician().getSurname();
@@ -106,12 +97,14 @@ public class CommunicationService {
 
     @Transactional
     public ChatMessageDTO saveMessage(UUID threadId, ChatMessageDTO messageDTO) {
+        // 1. Validate Entities
         ChatThread thread = chatThreadRepository.findById(threadId)
                 .orElseThrow(() -> new RuntimeException("Thread not found"));
 
         User sender = userRepository.findById(messageDTO.getSenderId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+        // 2. Save Message
         ChatMessage message = new ChatMessage();
         message.setChatThread(thread);
         message.setSender(sender);
@@ -120,8 +113,37 @@ public class CommunicationService {
 
         ChatMessage savedMessage = chatMessageRepository.save(message);
 
-        // Update the thread's last message time
+        // 3. Update Thread
         thread.setLastMessageAt(savedMessage.getTimestamp());
+
+        // 4. Send Notification
+        try {
+            // Determine who receives the notification (the person who is NOT the sender)
+            User recipient;
+            if (thread.getPatient().getId().equals(sender.getId())) {
+                recipient = thread.getPhysician();
+            } else {
+                recipient = thread.getPatient();
+            }
+
+            // Create payload for Frontend routing
+            // Key 'type'='chat' matches the logic in your Flutter FcmService
+            Map<String, String> payload = Map.of(
+                    "type", "chat",
+                    "threadId", thread.getId().toString(),
+                    "senderId", sender.getId().toString()
+            );
+
+            notificationService.sendPushToUser(
+                    recipient.getId(),
+                    "New message from " + sender.getFirstName(),
+                    savedMessage.getContent(),
+                    payload
+            );
+        } catch (Exception e) {
+            log.error("Failed to send chat notification for thread {}", threadId, e);
+            // We swallow the exception here so the message is still saved even if notification fails
+        }
 
         return ChatMessageDTO.builder()
                 .id(savedMessage.getId())
