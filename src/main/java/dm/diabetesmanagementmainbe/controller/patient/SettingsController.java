@@ -9,8 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
-
 @RestController
 @RequestMapping("/api/patients/settings")
 @RequiredArgsConstructor
@@ -30,9 +28,6 @@ public class SettingsController {
             @AuthenticationPrincipal SecurityUser user,
             @RequestBody @Valid PatientSettingsDTO request
     ) {
-        settingsService.updatePatientSettings(user.getUserId(), request);
-        return ResponseEntity.ok(settingsService.getPatientSettings(user.getUserId()));
-
+        return ResponseEntity.ok(settingsService.updatePatientSettings(user.getUserId(), request));
     }
 }
-
