@@ -38,7 +38,8 @@ aws:
   region: us-east-1
 
 gemini:
-  api-key: AIzaSyBYgWHB5EOPctkTa53RLxVEZlLw9KnhlnU
+  api-key: ${GEMINI_API_KEY}
+
 
 app:
   file-upload:
@@ -47,6 +48,9 @@ app:
     local-storage-path: ./uploads
   cors:
     allowed-origins: http://localhost:3000,http://192.168.1.145:*
+
+  firebase:
+    config-file: firebase-service-test.json
 
 fe:
   link: http://localhost:3000

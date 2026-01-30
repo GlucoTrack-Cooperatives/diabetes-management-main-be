@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-// // CLINCAL SETTINGS CONTROLLER
 @RestController
 @RequestMapping("/api/patients/settings")
 @RequiredArgsConstructor
