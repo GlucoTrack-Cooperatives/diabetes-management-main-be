@@ -5,6 +5,7 @@ WORKDIR /app
 # Copy gradle files for dependency caching
 COPY build.gradle settings.gradle gradlew ./
 COPY gradle ./gradle
+RUN chmod +x gradlew
 RUN ./gradlew build --no-daemon -x test || return 0
 
 # Copy source and build JAR
