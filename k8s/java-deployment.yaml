@@ -51,6 +51,8 @@ spec:
             # Firebase Configuration (disabled)
             - name: FIREBASE_ENABLED
               value: "false"
+            - name: FIREBASE_CONFIG_FILE
+              value: "dummy.json"
 
             # Frontend Link
             - name: FE_LINK

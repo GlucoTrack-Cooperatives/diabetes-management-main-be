@@ -36,8 +36,8 @@ gemini:
 
 app:
   firebase:
-    enabled: true
-    config-file: ${FIREBASE_CONFIG_FILE}
+    enabled: ${FIREBASE_ENABLED:true}
+    config-file: ${FIREBASE_CONFIG_FILE:dummy.json}
 
 fe:
   link: ${FE_LINK}
