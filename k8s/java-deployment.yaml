@@ -15,7 +15,7 @@ spec:
       serviceAccountName: gke-db-sa
       containers:
         - name: java-app
-          image: europe-central2-docker.pkg.dev/glucko-track-prod/glucko-repo/java-app:latest
+          image: europe-central2-docker.pkg.dev/glucko-track-prod/glucko-repository/java-app:latest
           ports:
             - containerPort: 8080
           env:

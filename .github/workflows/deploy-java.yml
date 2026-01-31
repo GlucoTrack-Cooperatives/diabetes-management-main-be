@@ -7,7 +7,7 @@ on:
 env:
   PROJECT_ID: 'glucko-track-prod'
   GAR_LOCATION: 'europe-central2'
-  REPOSITORY: 'glucko-repo'
+  REPOSITORY: 'glucko-repository'
   IMAGE: 'java-app'
   GKE_CLUSTER: 'autopilot-glucko-cluster'
   GKE_ZONE: 'europe-central2'
