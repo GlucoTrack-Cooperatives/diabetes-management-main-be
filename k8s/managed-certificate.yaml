@@ -1,0 +1,8 @@
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: glucko-cert
+spec:
+  domains:
+    - api.glucko.track
+    - data.glucko.track

@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: glucko-java
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: java-app
+  template:
+    metadata:
+      labels:
+        app: java-app
+    spec:
+      serviceAccountName: gke-db-sa
+      containers:
+        - name: java-app
+          image: europe-central2-docker.pkg.dev/glucko-track-prod/glucko-repo/java-app:latest
+          ports:
+            - containerPort: 8080
+          env:
+            # Spring Profile
+            - name: SPRING_PROFILES_ACTIVE
+              value: "main"
+
+            # Database Configuration
+            - name: DB_URL
+              value: "jdbc:postgresql://127.0.0.1:5432/glucko_db"
+            - name: DB_USERNAME
+              value: "glucko_admin"
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: glucko-db-pass
+                  key: password
+
+            # JWT Secret
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: glucko-secrets
+                  key: jwt-secret
+
+            # Gemini API Key (for food analysis)
+            - name: GEMINI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: glucko-secrets
+                  key: gemini-api-key
+
+            # Firebase Configuration
+            - name: FIREBASE_ENABLED
+              value: "true"
+            - name: FIREBASE_CONFIG_FILE
+              value: "mpauni-firebase-adminsdk-fbsvc-7452a83086.json"
+
+            # Frontend Link
+            - name: FE_LINK
+              value: "https://glucko.track"
+
+            # Pub/Sub Configuration
+            - name: GCP_PROJECT_ID
+              value: "glucko-track-prod"
+            - name: PUBSUB_SUBSCRIPTION
+              value: "glucose-alerts-sub"
+
+            # Python Backend URL
+            - name: DEXCOM_PYTHON_SERVICE_URL
+              value: "http://glucko-python-service"
+
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+
+        - name: cloud-sql-proxy
+          image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:latest
+          args:
+            - "--port=5432"
+            - "glucko-track-prod:europe-central2:glucko-db"
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"

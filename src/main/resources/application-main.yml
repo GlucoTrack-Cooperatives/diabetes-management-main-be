@@ -31,10 +31,22 @@ jwt:
     in-seconds: 3600
     in-seconds-for-remember-me: 86400
 
-aws:
-  access-key: ${AWS_ACCESS_KEY}
-  secret-key: ${AWS_SECRET_KEY}
-  region: ${AWS_REGION:us-east-1}
+gemini:
+  api-key: ${GEMINI_API_KEY}
+
+app:
+  firebase:
+    enabled: ${FIREBASE_ENABLED:true}
+    config-file: ${FIREBASE_CONFIG_FILE}
 
 fe:
-  link:
+  link: ${FE_LINK}
+
+dexcom:
+  python:
+    service:
+      url: ${DEXCOM_PYTHON_SERVICE_URL}
+
+pubsub:
+  subscription:
+    glucose-alerts: ${PUBSUB_SUBSCRIPTION}
