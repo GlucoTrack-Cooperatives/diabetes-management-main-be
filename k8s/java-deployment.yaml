@@ -68,9 +68,9 @@ spec:
             - name: DEXCOM_PYTHON_SERVICE_URL
               value: "http://glucko-python-service"
 
-            # JVM Options to avoid native library crashes
+            # JVM Options to avoid native library crashes in gRPC/Firebase
             - name: JAVA_TOOL_OPTIONS
-              value: "-Dio.netty.transport.noNative=true -Xmx1536m -XX:MaxMetaspaceSize=256m"
+              value: "-Dio.netty.transport.noNative=true -Dio.grpc.netty.useCustomAllocator=false -Djava.library.path=/tmp -Xmx1536m -XX:MaxMetaspaceSize=256m"
 
           resources:
             requests:
