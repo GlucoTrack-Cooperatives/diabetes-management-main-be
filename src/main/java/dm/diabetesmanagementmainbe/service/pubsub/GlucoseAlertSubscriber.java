@@ -11,6 +11,7 @@ import dm.diabetesmanagementmainbe.service.notifications.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.integration.annotation.ServiceActivator;
+import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,7 @@ public class GlucoseAlertSubscriber {
     private final AlertRepository alertRepository;
     private final PatientRepository patientRepository;
     private final ObjectMapper objectMapper;
+    @Nullable
     private final NotificationService notificationService;
 
     @ServiceActivator(inputChannel = "glucoseAlertInputChannel")
@@ -47,15 +49,19 @@ public class GlucoseAlertSubscriber {
             log.info("Saved glucose alert for patient: {} with severity: {}",
                     alertMessage.getPatientId(), alert.getSeverity());
 
-            try {
-                String notificationTitle = "Glucose Alert - " + alert.getSeverity();
-                String notificationBody = alertMessage.getMessage();
+            if (notificationService != null) {
+                try {
+                    String notificationTitle = "Glucose Alert - " + alert.getSeverity();
+                    String notificationBody = alertMessage.getMessage();
 
-                notificationService.sendPushToUser(patient.getId(), notificationTitle, notificationBody);
-                log.info("Push notification sent to all devices for patient: {}", alertMessage.getPatientId());
-            } catch (Exception notificationError) {
-                log.error("Failed to send push notification for patient: {}",
-                         alertMessage.getPatientId(), notificationError);
+                    notificationService.sendPushToUser(patient.getId(), notificationTitle, notificationBody);
+                    log.info("Push notification sent to all devices for patient: {}", alertMessage.getPatientId());
+                } catch (Exception notificationError) {
+                    log.error("Failed to send push notification for patient: {}",
+                             alertMessage.getPatientId(), notificationError);
+                }
+            } else {
+                log.debug("Firebase messaging is disabled. Skipping push notification for patient: {}", alertMessage.getPatientId());
             }
 
             BasicAcknowledgeablePubsubMessage originalMessage = message.getHeaders()

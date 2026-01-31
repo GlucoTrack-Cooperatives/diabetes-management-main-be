@@ -16,6 +16,7 @@ import dm.diabetesmanagementmainbe.service.notifications.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +33,8 @@ public class CommunicationService {
     private final AlertRepository alertRepository;
     private final UserRepository userRepository;
 
-    // Injected Notification Service
+    // Injected Notification Service (optional if Firebase is disabled)
+    @Nullable
     private final NotificationService notificationService;
 
     @Transactional(readOnly = true)
@@ -116,33 +118,37 @@ public class CommunicationService {
         // 3. Update Thread
         thread.setLastMessageAt(savedMessage.getTimestamp());
 
-        // 4. Send Notification
-        try {
-            // Determine who receives the notification (the person who is NOT the sender)
-            User recipient;
-            if (thread.getPatient().getId().equals(sender.getId())) {
-                recipient = thread.getPhysician();
-            } else {
-                recipient = thread.getPatient();
+        // 4. Send Notification (if Firebase is enabled)
+        if (notificationService != null) {
+            try {
+                // Determine who receives the notification (the person who is NOT the sender)
+                User recipient;
+                if (thread.getPatient().getId().equals(sender.getId())) {
+                    recipient = thread.getPhysician();
+                } else {
+                    recipient = thread.getPatient();
+                }
+
+                // Create payload for Frontend routing
+                // Key 'type'='chat' matches the logic in your Flutter FcmService
+                Map<String, String> payload = Map.of(
+                        "type", "chat",
+                        "threadId", thread.getId().toString(),
+                        "senderId", sender.getId().toString()
+                );
+
+                notificationService.sendPushToUser(
+                        recipient.getId(),
+                        "New message from " + sender.getFirstName(),
+                        savedMessage.getContent(),
+                        payload
+                );
+            } catch (Exception e) {
+                log.error("Failed to send chat notification for thread {}", threadId, e);
+                // We swallow the exception here so the message is still saved even if notification fails
             }
-
-            // Create payload for Frontend routing
-            // Key 'type'='chat' matches the logic in your Flutter FcmService
-            Map<String, String> payload = Map.of(
-                    "type", "chat",
-                    "threadId", thread.getId().toString(),
-                    "senderId", sender.getId().toString()
-            );
-
-            notificationService.sendPushToUser(
-                    recipient.getId(),
-                    "New message from " + sender.getFirstName(),
-                    savedMessage.getContent(),
-                    payload
-            );
-        } catch (Exception e) {
-            log.error("Failed to send chat notification for thread {}", threadId, e);
-            // We swallow the exception here so the message is still saved even if notification fails
+        } else {
+            log.debug("Firebase messaging is disabled. Skipping chat notification.");
         }
 
         return ChatMessageDTO.builder()

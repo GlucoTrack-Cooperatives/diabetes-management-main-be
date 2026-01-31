@@ -5,6 +5,7 @@ import dm.diabetesmanagementmainbe.dao.model.communication.FcmToken;
 import dm.diabetesmanagementmainbe.dao.repository.communication.FcmTokenRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.UUID;
 import com.google.firebase.messaging.FirebaseMessagingException;
 
 @Service
+@ConditionalOnProperty(name = "app.firebase.enabled", havingValue = "true")
 @Slf4j
 @RequiredArgsConstructor
 public class NotificationService {

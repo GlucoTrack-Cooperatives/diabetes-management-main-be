@@ -1,0 +1,33 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: glucko-ingress
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: "glucko-static-ip"
+    networking.gke.io/managed-certificates: "glucko-cert"
+    kubernetes.io/ingress.class: "gce"
+spec:
+  rules:
+    # Java Backend - api.glucko.track
+    - host: api.glucko.track
+      http:
+        paths:
+          - path: /*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: glucko-java-service
+                port:
+                  number: 80
+
+    # Python Backend - data.glucko.track
+    - host: data.glucko.track
+      http:
+        paths:
+          - path: /*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: glucko-python-service
+                port:
+                  number: 80

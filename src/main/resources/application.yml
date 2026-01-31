@@ -39,14 +39,28 @@ spring:
     open-in-view: false
     show-sql: false
 
+app:
+  firebase:
+    enabled: false
+    config-file: firebase-service-test.json
+
 jwt:
   secret: my-secret-key-which-should-be-changed-in-production-and-be-base64-encoded
   validity:
     in-seconds: 3600
     in-seconds-for-remember-me: 86400
 
-aws:
-  region: us-east-1
+gemini:
+  api-key: ${GEMINI_API_KEY:}
 
 fe:
   link:
+
+dexcom:
+  python:
+    service:
+      url: http://localhost:8081
+
+pubsub:
+  subscription:
+    glucose-alerts: glucose-alerts-sub

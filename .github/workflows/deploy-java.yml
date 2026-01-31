@@ -1,0 +1,52 @@
+name: Deploy Java 21 Gradle to GKE
+
+on:
+  push:
+    branches: [ "main" ]
+
+env:
+  PROJECT_ID: 'glucko-track-prod'
+  GAR_LOCATION: 'europe-central2'
+  REPOSITORY: 'glucko-repo'
+  IMAGE: 'java-app'
+  GKE_CLUSTER: 'autopilot-glucko-cluster'
+  GKE_ZONE: 'europe-central2'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # This is the "Security Bridge" using the Golden String you saved in Secrets
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: 'github-actions-deployer@glucko-track-prod.iam.gserviceaccount.com'
+
+      # Connects GitHub to your specific GKE Cluster
+      - name: Set up GKE credentials
+        uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: ${{ env.GKE_CLUSTER }}
+          location: ${{ env.GKE_ZONE }}
+
+      # Builds the Docker image (running the Gradle 8.5/Java 21 build inside)
+      - name: Build and Push Docker Image
+        run: |
+          docker build -t ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE }}:${{ github.sha }} .
+          docker push ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE }}:${{ github.sha }}
+
+      # Applies the K8s manifests and updates the image to the new version
+      - name: Deploy to GKE
+        run: |
+          kubectl apply -f k8s/java-deployment.yaml
+          kubectl apply -f k8s/java-service.yaml
+          kubectl set image deployment/glucko-java java-app=${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE }}:${{ github.sha }}
+          kubectl rollout status deployment/glucko-java
