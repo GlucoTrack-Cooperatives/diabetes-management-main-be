@@ -27,7 +27,7 @@ spec:
             - name: DB_URL
               value: "jdbc:postgresql://127.0.0.1:5432/glucko_db"
             - name: DB_USERNAME
-              value: "glucko_admin"
+              value: "admin"
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
