@@ -33,7 +33,7 @@ spring:
       max-request-size: 10MB
 
 gemini:
-  api-key: ${GEMINI_API_KEY}
+  api-key: 123
 
 
 app:
@@ -45,8 +45,7 @@ app:
     allowed-origins: http://localhost:3000,http://192.168.1.145:*
 
   firebase:
-    enabled: true
-    config-file: firebase-service-test.json
+    enabled: false
 
 fe:
   link: http://localhost:3000
