@@ -68,13 +68,17 @@ spec:
             - name: DEXCOM_PYTHON_SERVICE_URL
               value: "http://glucko-python-service"
 
+            # JVM Options to avoid native library crashes
+            - name: JAVA_TOOL_OPTIONS
+              value: "-Dio.netty.transport.noNative=true -Xmx1536m -XX:MaxMetaspaceSize=256m"
+
           resources:
             requests:
-              memory: "512Mi"
-              cpu: "250m"
-            limits:
               memory: "1Gi"
               cpu: "500m"
+            limits:
+              memory: "2Gi"
+              cpu: "1000m"
           volumeMounts:
             - name: firebase-config
               mountPath: /app/config
