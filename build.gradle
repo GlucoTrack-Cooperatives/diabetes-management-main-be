@@ -50,7 +50,13 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok:1.18.42'
     implementation 'me.paulschwarz:spring-dotenv:4.0.0'
 
-    implementation 'com.google.firebase:firebase-admin:9.7.0'
+    implementation('com.google.firebase:firebase-admin:9.7.0') {
+        exclude group: 'io.grpc', module: 'grpc-netty-shaded'
+        exclude group: 'io.netty', module: 'netty-tcnative-boringssl-static'
+    }
+    // Use pure Java gRPC transport instead of native
+    implementation 'io.grpc:grpc-netty:1.62.2'
+    implementation 'io.grpc:grpc-okhttp:1.62.2'
 }
 
 tasks.named('test') {
