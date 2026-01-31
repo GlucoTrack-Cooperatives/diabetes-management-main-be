@@ -52,7 +52,7 @@ spec:
             - name: FIREBASE_ENABLED
               value: "true"
             - name: FIREBASE_CONFIG_FILE
-              value: "mpauni-firebase-adminsdk-fbsvc-7452a83086.json"
+              value: "file:/app/config/firebase-key.json"
 
             # Frontend Link
             - name: FE_LINK
@@ -75,6 +75,10 @@ spec:
             limits:
               memory: "1Gi"
               cpu: "500m"
+          volumeMounts:
+            - name: firebase-config
+              mountPath: /app/config
+              readOnly: true
 
         - name: cloud-sql-proxy
           image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:latest
@@ -88,3 +92,8 @@ spec:
             limits:
               memory: "256Mi"
               cpu: "200m"
+
+      volumes:
+        - name: firebase-config
+          secret:
+            secretName: firebase-config

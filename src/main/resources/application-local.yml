@@ -8,7 +8,7 @@ spring:
   flyway:
     enabled: true
   datasource:
-    url: jdbc:postgresql://localhost:5432/diabetes-management
+    url: jdbc:postgresql://localhost:5432/diabetes_management
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
@@ -45,7 +45,7 @@ app:
     allowed-origins: http://localhost:3000,http://192.168.1.145:*
 
   firebase:
-    enabled: false
+    enabled: true
     config-file: firebase-service-test.json
 
 fe:
