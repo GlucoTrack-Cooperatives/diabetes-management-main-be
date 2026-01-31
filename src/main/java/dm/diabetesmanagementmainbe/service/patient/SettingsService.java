@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+
+// CLINICAL SETTINGS SERVICE
 @Service
 @RequiredArgsConstructor
 public class SettingsService {
@@ -18,20 +20,11 @@ public class SettingsService {
 
     public PatientSettingsDTO getPatientSettings(UUID patientId) {
         return settingsRepository.findByPatientId(patientId)
-                .map(settings -> PatientSettingsDTO.builder()
-                        .targetRangeHigh(settings.getTargetRangeHigh())
-                        .targetRangeLow(settings.getTargetRangeLow())
-                        .insulinCarbRatio(settings.getInsulinCarbRatio())
-                        .correctionFactor(settings.getCorrectionFactor())
-                        .lowThreshold(settings.getLowThreshold())
-                        .criticalLowThreshold(settings.getCriticalLowThreshold())
-                        .highThreshold(settings.getHighThreshold())
-                        .criticalHighThreshold(settings.getCriticalHighThreshold())
-                        .build())
-                .orElse(new PatientSettingsDTO());
+                .map(this::mapToDTO)
+                .orElse(PatientSettingsDTO.builder().build());
     }
 
-    public void updatePatientSettings(UUID patientId, PatientSettingsDTO request) {
+    public PatientSettingsDTO updatePatientSettings(UUID patientId, PatientSettingsDTO request) {
         var patient = patientRepository.findById(patientId)
                 .orElseThrow(() -> new RuntimeException("Patient not found"));
 
@@ -80,12 +73,26 @@ public class SettingsService {
             settings.setCriticalHighThreshold(request.getCriticalHighThreshold());
         }
 
-        settingsRepository.save(settings);
+        var savedSettings = settingsRepository.save(settings);
+        return mapToDTO(savedSettings);
     }
 
     private void validatePositiveValue(Number value, String fieldName) {
         if (value.doubleValue() <= 0) {
             throw new IllegalArgumentException(fieldName + " must be a positive value");
         }
+    }
+
+    private PatientSettingsDTO mapToDTO(PatientClinicalSetting settings) {
+        return PatientSettingsDTO.builder()
+                .targetRangeHigh(settings.getTargetRangeHigh())
+                .targetRangeLow(settings.getTargetRangeLow())
+                .insulinCarbRatio(settings.getInsulinCarbRatio())
+                .correctionFactor(settings.getCorrectionFactor())
+                .lowThreshold(settings.getLowThreshold())
+                .criticalLowThreshold(settings.getCriticalLowThreshold())
+                .highThreshold(settings.getHighThreshold())
+                .criticalHighThreshold(settings.getCriticalHighThreshold())
+                .build();
     }
 }

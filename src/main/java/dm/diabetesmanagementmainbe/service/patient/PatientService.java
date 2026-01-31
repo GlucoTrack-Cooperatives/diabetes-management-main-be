@@ -2,6 +2,7 @@ package dm.diabetesmanagementmainbe.service.patient;
 
 import dm.diabetesmanagementmainbe.controller.patient.dto.settings.UpdatePatientProfileRequest;
 import dm.diabetesmanagementmainbe.dao.model.user.Patient;
+import dm.diabetesmanagementmainbe.dao.model.user.Physician;
 import dm.diabetesmanagementmainbe.dao.repository.user.PatientRepository;
 import dm.diabetesmanagementmainbe.dtos.DashboardDTO;
 import dm.diabetesmanagementmainbe.dtos.KeyMetricsDTO;
@@ -28,6 +29,7 @@ public class PatientService implements IPatientService {
     private final FoodLogRepository foodLogRepository;
     private final InsulinDoseRepository insulinDoseRepository;
     private final PatientRepository patientRepository;
+    private final CommunicationService communicationService;
 
 
     @Override
@@ -41,6 +43,7 @@ public class PatientService implements IPatientService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PatientDTO getPatient(UUID patientId) {
         return patientRepository.findById(patientId)
                 .map(this::mapToDTO)
@@ -70,13 +73,21 @@ public class PatientService implements IPatientService {
             throw new RuntimeException("No physician request pending");
         }
 
+        if (Boolean.TRUE.equals(patient.getIsPhysicianConfirmed())) {
+            // log.warn("Patient {} already confirmed physician {}", patientId, patient.getPhysician().getId());
+            return; // Already confirmed, no need to do anything
+        }
+
         patient.setIsPhysicianConfirmed(true);
         patientRepository.save(patient);
+
+        // Create initial chat thread
+        communicationService.createInitialThread(patient, patient.getPhysician());
     }
 
     // Helper method to handle mapping
     private PatientDTO mapToDTO(Patient patient) {
-        return PatientDTO.builder()
+        PatientDTO.PatientDTOBuilder builder = PatientDTO.builder()
                 .id(patient.getId())
                 .firstName(patient.getFirstName())
                 .surName(patient.getSurname())
@@ -84,9 +95,20 @@ public class PatientService implements IPatientService {
                 .dob(patient.getDob())
                 .diagnosisDate(patient.getDiagnosisDate())
                 .emergencyContactPhone(patient.getEmergencyContactPhone())
-                // Convert Instant (DB) to LocalDateTime (DTO)
                 .createdAt(java.time.LocalDateTime.ofInstant(
-                        patient.getCreatedAt(), ZoneId.systemDefault()))
-                .build();
+                        patient.getCreatedAt(), ZoneId.systemDefault()));
+
+        // ADD PHYSICIAN FIELDS
+        if (patient.getPhysician() != null) {
+            Physician physician = patient.getPhysician();
+            builder.physicianId(physician.getId())
+                    .physicianName(physician.getFirstName() + " " + physician.getSurname())
+                    .physicianSpecialty(physician.getSpecialty())  // if this field exists
+                    .physicianClinic(physician.getClinicName());        // if this field exists
+        }
+
+        builder.isPhysicianConfirmed(patient.getIsPhysicianConfirmed());
+
+        return builder.build();
     }
 }

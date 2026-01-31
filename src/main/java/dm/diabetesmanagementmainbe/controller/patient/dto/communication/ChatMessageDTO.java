@@ -14,6 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class ChatMessageDTO {
     private UUID id;
+    private UUID threadId;
     private String content;
     private UUID senderId;
     private Instant timestamp;
