@@ -70,7 +70,7 @@ spec:
 
             # JVM Options to avoid native library crashes in gRPC/Firebase
             - name: JAVA_TOOL_OPTIONS
-              value: "-Dio.netty.transport.noNative=true -Dio.grpc.netty.useCustomAllocator=false -Djava.library.path=/tmp -Xmx1536m -XX:MaxMetaspaceSize=256m"
+              value: "-Dio.netty.handler.ssl.noOpenSsl=true -Xmx1536m -XX:MaxMetaspaceSize=256m"
 
           resources:
             requests:
