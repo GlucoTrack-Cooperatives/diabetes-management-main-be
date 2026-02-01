@@ -48,11 +48,11 @@ spec:
                   name: glucko-secrets
                   key: gemini-api-key
 
-            # Firebase Configuration (disabled)
+            # Firebase Configuration
             - name: FIREBASE_ENABLED
-              value: "false"
+              value: "true"
             - name: FIREBASE_CONFIG_FILE
-              value: "dummy.json"
+              value: "file:/app/config/firebase-key.json"
 
             # Frontend Link
             - name: FE_LINK
@@ -68,9 +68,9 @@ spec:
             - name: DEXCOM_PYTHON_SERVICE_URL
               value: "http://glucko-python-service"
 
-            # JVM Options to avoid native library crashes in gRPC/Firebase
+            # JVM Options for memory management
             - name: JAVA_TOOL_OPTIONS
-              value: "-Dio.netty.handler.ssl.noOpenSsl=true -Xmx1536m -XX:MaxMetaspaceSize=256m"
+              value: "-Xmx1536m -XX:MaxMetaspaceSize=256m"
 
           resources:
             requests:
@@ -79,6 +79,11 @@ spec:
             limits:
               memory: "2Gi"
               cpu: "1000m"
+          volumeMounts:
+            - name: firebase-config
+              mountPath: /app/config
+              readOnly: true
+
         - name: cloud-sql-proxy
           image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:latest
           args:
@@ -91,3 +96,8 @@ spec:
             limits:
               memory: "256Mi"
               cpu: "200m"
+
+      volumes:
+        - name: firebase-config
+          secret:
+            secretName: firebase-config
