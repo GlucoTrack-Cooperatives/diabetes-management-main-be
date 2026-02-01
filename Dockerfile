@@ -12,8 +12,8 @@ RUN ./gradlew build --no-daemon -x test || return 0
 COPY src ./src
 RUN ./gradlew bootJar --no-daemon -x test
 
-# Stage 2: Runtime image (Java 21 JRE)
-FROM eclipse-temurin:21-jre-alpine
+# Stage 2: Runtime image (Java 21 JRE - Ubuntu based, not Alpine)
+FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
 
 # Copy the JAR from the builder stage
