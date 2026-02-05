@@ -15,8 +15,8 @@ import java.util.UUID;
 public class HealthEventDTO {
     private UUID id;
     private LocalDateTime timestamp;
-    //private HealthEventCategory category;
+    private String eventType;
     private Integer severity;
-    private String note;
+    private String notes;
     private LocalDateTime createdAt;
 }

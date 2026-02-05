@@ -35,6 +35,9 @@ public class HealthEvent {
     @Column(name = "event_type", nullable = false, length = 50)
     private String eventType;
 
+    @Column(name = "notes")
+    private String notes;
+
     @NotNull
     @ColumnDefault("now()")
     @Column(name = "created_at", nullable = false)

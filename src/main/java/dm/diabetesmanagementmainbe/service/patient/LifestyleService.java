@@ -7,13 +7,18 @@ import dm.diabetesmanagementmainbe.controller.patient.dto.lifestyle.WeightLogReq
 import dm.diabetesmanagementmainbe.dao.model.logging.*;
 import dm.diabetesmanagementmainbe.dao.repository.logging.*;
 import dm.diabetesmanagementmainbe.dao.repository.user.PatientRepository;
+import dm.diabetesmanagementmainbe.dtos.HealthEventDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -81,8 +86,22 @@ public class LifestyleService {
         var healthEvent = new HealthEvent();
         healthEvent.setPatient(patient);
         healthEvent.setEventType(request.getEventType());
+        healthEvent.setNotes(request.getNotes());
         healthEvent.setTimestamp(Instant.now());
 
         healthEventRepository.save(healthEvent);
+    }
+
+    public List<HealthEventDTO> getHealthEvents(UUID patientId, Instant start, Instant end) {
+        return healthEventRepository.findByPatientIdAndTimestampBetween(patientId, start, end)
+                .stream()
+                .map(event -> HealthEventDTO.builder()
+                        .id(event.getId())
+                        .timestamp(LocalDateTime.ofInstant(event.getTimestamp(), ZoneId.systemDefault()))
+                        .eventType(event.getEventType())
+                        .notes(event.getNotes())
+                        .createdAt(LocalDateTime.ofInstant(event.getCreatedAt(), ZoneId.systemDefault()))
+                        .build())
+                .collect(Collectors.toList());
     }
 }

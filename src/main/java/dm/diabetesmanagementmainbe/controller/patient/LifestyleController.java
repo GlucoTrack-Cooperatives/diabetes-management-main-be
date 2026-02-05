@@ -4,13 +4,17 @@ import dm.diabetesmanagementmainbe.controller.patient.dto.lifestyle.HealthEventR
 import dm.diabetesmanagementmainbe.controller.patient.dto.lifestyle.LifestyleSummaryDTO;
 import dm.diabetesmanagementmainbe.controller.patient.dto.lifestyle.WaterLogRequest;
 import dm.diabetesmanagementmainbe.controller.patient.dto.lifestyle.WeightLogRequest;
+import dm.diabetesmanagementmainbe.dtos.HealthEventDTO;
 import dm.diabetesmanagementmainbe.service.patient.LifestyleService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -41,5 +45,13 @@ public class LifestyleController {
     public ResponseEntity<Void> logHealthEvent(@PathVariable UUID patientId, @RequestBody @Valid HealthEventRequest request) {
         lifestyleService.logHealthEvent(patientId, request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @GetMapping("/events")
+    public ResponseEntity<List<HealthEventDTO>> getHealthEvents(
+            @PathVariable UUID patientId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant endDate) {
+        return ResponseEntity.ok(lifestyleService.getHealthEvents(patientId, startDate, endDate));
     }
 }

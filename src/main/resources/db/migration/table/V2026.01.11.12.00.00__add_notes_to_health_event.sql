@@ -1,0 +1,1 @@
+ALTER TABLE health_event ADD COLUMN notes VARCHAR(255);

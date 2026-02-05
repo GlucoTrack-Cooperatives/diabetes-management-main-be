@@ -8,4 +8,6 @@ public class HealthEventRequest {
 
     @NotNull
     private String eventType;
+
+    private String notes;
 }
