@@ -1,10 +1,12 @@
 package dm.diabetesmanagementmainbe.controller.physician;
 
 import dm.diabetesmanagementmainbe.config.security.SecurityUser;
+import dm.diabetesmanagementmainbe.controller.physician.dto.CreateAppointmentRequest;
 import dm.diabetesmanagementmainbe.controller.physician.dto.InvitePatientRequest;
 import dm.diabetesmanagementmainbe.controller.physician.dto.PatientOverviewDTO;
 import dm.diabetesmanagementmainbe.controller.physician.dto.PhysicianSignUpRequest;
-import dm.diabetesmanagementmainbe.dtos.PatientDTO;
+import dm.diabetesmanagementmainbe.dtos.PatientAppointmentDTO;
+import dm.diabetesmanagementmainbe.service.physician.AppointmentService;
 import dm.diabetesmanagementmainbe.service.physician.PhysicianService;
 import dm.diabetesmanagementmainbe.service.user.UserService;
 import jakarta.validation.Valid;
@@ -16,6 +18,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/physicians")
@@ -25,6 +28,7 @@ public class PhysicianController {
 
     private final UserService userService;
     private final PhysicianService physicianService;
+    private final AppointmentService appointmentService;
 
     @PostMapping("/sign-up")
     public ResponseEntity<Void> signUpPhysician(@RequestBody @Valid PhysicianSignUpRequest request) {
@@ -53,5 +57,26 @@ public class PhysicianController {
         }
 
         return ResponseEntity.ok(physicianService.getPatients(securityUser.getUserId()));
+    }
+
+    @GetMapping("/patients/{patientId}/appointments")
+    public ResponseEntity<List<PatientAppointmentDTO>> getPatientAppointments(
+            @AuthenticationPrincipal SecurityUser securityUser,
+            @PathVariable UUID patientId) {
+        if (securityUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        return ResponseEntity.ok(appointmentService.getPatientAppointments(patientId));
+    }
+
+    @PostMapping("/patients/{patientId}/appointments")
+    public ResponseEntity<PatientAppointmentDTO> createAppointment(
+            @AuthenticationPrincipal SecurityUser securityUser,
+            @PathVariable UUID patientId,
+            @RequestBody @Valid CreateAppointmentRequest request) {
+        if (securityUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        return ResponseEntity.ok(appointmentService.createAppointment(patientId, request));
     }
 }
