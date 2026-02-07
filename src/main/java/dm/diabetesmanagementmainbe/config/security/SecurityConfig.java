@@ -46,6 +46,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/patients/sign-up").permitAll()
                         .requestMatchers("/api/physicians/sign-up").permitAll()
 
+                        // Internal service-to-service endpoints
+                        .requestMatchers("/api/diabetes-management/internal/**").permitAll()
+
                         // Role-based access control
                         .requestMatchers("/api/physicians/**").authenticated()
                         .requestMatchers("/api/patients/**").authenticated()
