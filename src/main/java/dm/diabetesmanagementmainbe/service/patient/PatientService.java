@@ -96,7 +96,8 @@ public class PatientService implements IPatientService {
                 .diagnosisDate(patient.getDiagnosisDate())
                 .emergencyContactPhone(patient.getEmergencyContactPhone())
                 .createdAt(java.time.LocalDateTime.ofInstant(
-                        patient.getCreatedAt(), ZoneId.systemDefault()));
+                        patient.getCreatedAt(), ZoneId.systemDefault()))
+                .dexcomEmail(patient.getDexcomEmail());
 
         // ADD PHYSICIAN FIELDS
         if (patient.getPhysician() != null) {

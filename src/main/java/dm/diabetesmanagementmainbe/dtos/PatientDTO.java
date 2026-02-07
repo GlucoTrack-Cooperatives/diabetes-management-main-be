@@ -22,7 +22,7 @@ public class PatientDTO {
     private LocalDate diagnosisDate;
     private String emergencyContactPhone;
     private LocalDateTime createdAt;
-
+    private String dexcomEmail;
     private UUID physicianId;
     private String physicianName;
     private String physicianSpecialty;
