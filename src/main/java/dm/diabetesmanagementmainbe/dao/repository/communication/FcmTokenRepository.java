@@ -5,9 +5,11 @@ import dm.diabetesmanagementmainbe.dao.repository.AbstractRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface FcmTokenRepository extends AbstractRepository<FcmToken> {
     List<FcmToken> findByUserId(UUID userId);
+    Optional<FcmToken> findByToken(String token);
 }

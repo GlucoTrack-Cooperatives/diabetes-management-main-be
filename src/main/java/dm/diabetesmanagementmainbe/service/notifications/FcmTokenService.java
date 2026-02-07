@@ -19,10 +19,11 @@ public class FcmTokenService {
 
     @Transactional
     public FcmToken registerToken(UUID userId, String token) {
-        var existingToken = fcmTokenRepository.findAll().stream()
-                .filter(t -> t.getToken().equals(token))
-                .findFirst();
+//        var existingToken = fcmTokenRepository.findAll().stream()
+//                .filter(t -> t.getToken().equals(token))
+//                .findFirst();
 
+        var existingToken = fcmTokenRepository.findByToken(token);
         if (existingToken.isPresent()) {
             var fcmToken = existingToken.get();
             if (!fcmToken.getUserId().equals(userId)) {
@@ -44,13 +45,19 @@ public class FcmTokenService {
 
     @Transactional
     public void unregisterToken(String token) {
-        fcmTokenRepository.findAll().stream()
-                .filter(t -> t.getToken().equals(token))
-                .findFirst()
+        fcmTokenRepository.findByToken(token)
                 .ifPresent(fcmToken -> {
                     fcmTokenRepository.delete(fcmToken);
                     log.info("Unregistered FCM token for user: {}", fcmToken.getUserId());
                 });
+
+//        fcmTokenRepository.findAll().stream()
+//                .filter(t -> t.getToken().equals(token))
+//                .findFirst()
+//                .ifPresent(fcmToken -> {
+//                    fcmTokenRepository.delete(fcmToken);
+//                    log.info("Unregistered FCM token for user: {}", fcmToken.getUserId());
+//                });
     }
 
     public List<FcmToken> getUserTokens(UUID userId) {
