@@ -45,7 +45,7 @@ app:
     allowed-origins: http://localhost:3000,http://192.168.1.145:*
 
   firebase:
-    enabled: false
+    enabled: true
 
 fe:
   link: http://localhost:3000
