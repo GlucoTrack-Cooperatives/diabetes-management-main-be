@@ -16,6 +16,7 @@ public class ChatThreadDTO {
     private UUID id;
     private String physicianName;
     private String participantName;
+    private UUID patientId;
     private String lastMessage;
     private Instant lastMessageTime;
 }

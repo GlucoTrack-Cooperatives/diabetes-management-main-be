@@ -76,6 +76,7 @@ public class CommunicationService {
                             .id(thread.getId())
                             .physicianName(thread.getPhysician().getFirstName())
                             .participantName(participantName)
+                            .patientId(patientId)
                             .lastMessage(lastMessageContent)
                             .lastMessageTime(lastMessageTime)
                             .build();
