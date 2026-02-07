@@ -5,6 +5,7 @@ import dm.diabetesmanagementmainbe.dao.repository.communication.AlertRepository;
 import dm.diabetesmanagementmainbe.dao.repository.user.PatientRepository;
 import dm.diabetesmanagementmainbe.dto.pubsub.GlucoseAlertMessage;
 import dm.diabetesmanagementmainbe.service.notifications.NotificationService;
+import jakarta.annotation.security.PermitAll;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,7 @@ public class InternalAlertController {
     private final NotificationService notificationService;
 
     @PostMapping
+    @PermitAll
     public ResponseEntity<Void> receiveAlert(@RequestBody GlucoseAlertMessage alertMessage) {
         try {
             log.info("Received alert via HTTP from Python backend: patient={}, value={}, type={}",
