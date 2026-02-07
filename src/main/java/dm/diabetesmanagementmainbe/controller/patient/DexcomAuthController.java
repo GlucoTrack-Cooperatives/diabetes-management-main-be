@@ -27,7 +27,11 @@ public class DexcomAuthController {
             dexcomService.authenticateDexcom(request);
             return ResponseEntity.status(HttpStatus.OK).build();
         } catch (DexcomAuthenticationException e) {
+            log.error("Dexcom authentication failed: {}", e.getMessage());
             return ResponseEntity.status(e.getHttpStatus()).build();
+        } catch (Exception e) {
+            log.error("Unexpected error during Dexcom authentication", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }

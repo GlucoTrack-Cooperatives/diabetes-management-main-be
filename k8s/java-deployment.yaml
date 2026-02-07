@@ -66,7 +66,7 @@ spec:
 
             # Python Backend URL
             - name: DEXCOM_PYTHON_SERVICE_URL
-              value: "http://glucko-python-service"
+              value: "http://glucko-python-service:8000"
 
             # JVM Options for memory management
             - name: JAVA_TOOL_OPTIONS
