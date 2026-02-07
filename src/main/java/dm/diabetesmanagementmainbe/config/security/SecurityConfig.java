@@ -41,13 +41,13 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authz -> authz
+                        // Internal service-to-service endpoints (MUST BE FIRST!)
+                        .requestMatchers(HttpMethod.POST, "/api/diabetes-management/internal/**").permitAll()
+
                         // Public Sign-Up endpoints
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/patients/sign-up").permitAll()
                         .requestMatchers("/api/physicians/sign-up").permitAll()
-
-                        // Internal service-to-service endpoints
-                        .requestMatchers("/api/diabetes-management/internal/**").permitAll()
 
                         // Role-based access control
                         .requestMatchers("/api/physicians/**").authenticated()
