@@ -90,7 +90,8 @@ public class PhysicianService {
                 .stream()
                 .collect(Collectors.toMap(
                         reading -> reading.getPatient().getId(),
-                        Function.identity()
+                        Function.identity(),
+                        (existing, replacement) -> existing
                 ));
 
         // 3. Map to DTOs using the in-memory map
